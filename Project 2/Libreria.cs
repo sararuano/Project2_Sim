@@ -15,5 +15,7 @@ public class Class1
 			lista.Add(variable1);
 		}
 		Console.WriteLine(variable1.ToString()));
+		Console.WriteLine("Diego no hce una mierda");
+
 	}
 }
