@@ -16,6 +16,7 @@ public class Class1
 		}
 		Console.WriteLine(variable1.ToString()));
 		Console.WriteLine("Diego no hce una mierda");
+		Console.WriteLine("Diego no hce una mierda1");
 
 	}
 }
