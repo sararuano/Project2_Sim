@@ -23,5 +23,7 @@ public class Class1
 		Console.WriteLine(variable1.ToString()));
 
 		Console.WriteLine("Holaquetal");
+
+		Console.WriteLine("Holaquetal 2");
 	}
 }
