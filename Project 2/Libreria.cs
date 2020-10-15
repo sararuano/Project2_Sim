@@ -21,9 +21,6 @@ public class Class1
 		int variable2;
 
 		Console.WriteLine(variable1.ToString()));
-		Console.WriteLine(variable1.ToString()));
-
-		Console.WriteLine(variable1.ToString()));
 
 
 	}
