@@ -17,6 +17,7 @@ namespace BibliotecaCristal
         //CONSTRUCTORS
 
         //Constructor in case we create a new cristal, all cells are liquid. Number of cells must be specified
+        //_______________________________LA FILA DEBE SER IMPAR!!!!!
         public Cristal(int filas)
         {
             this.cristal = new Celda[filas, filas];
@@ -79,8 +80,8 @@ namespace BibliotecaCristal
 
                     double x = Math.Round((futurecristall.GetLength(0) - 1) / 2 * (-delta_space) + delta_space * i, 3);
                     double y = Math.Round((futurecristall.GetLength(0) - 1) / 2 * (-delta_space) + delta_space * j, 3);
-                    double lapT = T_Laplatian(i, j);
-                    double lapPh = Ph_Laplatian(i, j);
+                    double lapT = this.T_Laplatian(i, j);
+                    double lapPh = this.Ph_Laplatian(i, j);
                     double deltap_t = this.cristal[i, j].Set_Diff_Phase(eps, m, alpha, delta, lapPh);
                     double deltaT_t = this.cristal[i, j].Set_Diff_Temperature(eps, m, alpha, delta, lapPh, lapT);
                     double newphase = this.cristal[i, j].GetPhase() + deltap_t * delta_time;
