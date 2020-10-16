@@ -59,7 +59,10 @@ namespace BibliotecaCristal
             }
             return null;
         }
-
+        public Celda[,] GetCristal()
+        {
+            return cristal;
+        }
         //Function to solidify directly a specific cell, indexes must be specified
         public void Solidificar(int i, int j)
         {
@@ -88,10 +91,12 @@ namespace BibliotecaCristal
                     double newTemperature = this.cristal[i, j].GetTemperature() + deltaT_t * delta_time;
                     Celda cell = new Celda(x, y, newTemperature, newphase);
                     j++;
+                    Console.WriteLine("+1");
                 }
                 i++;
             }
             this.cristal = futurecristall;
+
         }
 
         //MATH METHODS
@@ -107,40 +112,40 @@ namespace BibliotecaCristal
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
             }
-            if (i == 0 && j != 0 && j != (this.cristal.GetLength(0) - 1))
+            else if (i == 0 && j != 0 && j != (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
             }
-            if (i == 0 && j == (this.cristal.GetLength(0) - 1))
+            else if (i == 0 && j == (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
             }
             //BC i = N-1 with edges
-            if (i == (this.cristal.GetLength(0) - 1) && j == 0)
+            else if (i == (this.cristal.GetLength(0) - 1) && j == 0)
             {
                 Txx = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
             }
-            if (i == (this.cristal.GetLength(0) - 1) && j != 0 && j != (this.cristal.GetLength(0) - 1))
+            else if (i == (this.cristal.GetLength(0) - 1) && j != 0 && j != (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
             }
-            if (i == (this.cristal.GetLength(0) - 1) && j == (this.cristal.GetLength(0) - 1))
+            else if (i == (this.cristal.GetLength(0) - 1) && j == (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
             }
             //BC j=0 in the middle
-            if (j == 0 && i != 0 && i != (this.cristal.GetLength(0) - 1))
+            else if (j == 0 && i != 0 && i != (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j].GetTemperature()) / Math.Pow(delta_space, 2);
             }
             //BC j=N-1 in the middle
-            if (j == this.cristal.GetLength(0) && i != 0 && i != (this.cristal.GetLength(0) - 1))
+            else if (j == (this.cristal.GetLength(0)-1) && i != 0 && i != (this.cristal.GetLength(0) - 1))
             {
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
@@ -152,6 +157,7 @@ namespace BibliotecaCristal
             }
             double lap = Txx + Tyy;
             return lap;
+            
         }
 
 
@@ -166,40 +172,40 @@ namespace BibliotecaCristal
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
             }
-            if (i == 0 && j != 0 && j != (this.cristal.GetLength(0) - 1))
+            else if (i == 0 && j != 0 && j != (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
             }
-            if (i == 0 && j == (this.cristal.GetLength(0) - 1))
+            else if (i == 0 && j == (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
             }
             //BC i = N-1 with edges
-            if (i == (this.cristal.GetLength(0) - 1) && j == 0)
+            else if (i == (this.cristal.GetLength(0) - 1) && j == 0)
             {
                 Pxx = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
             }
-            if (i == (this.cristal.GetLength(0) - 1) && j != 0 && j != (this.cristal.GetLength(0) - 1))
+            else if (i == (this.cristal.GetLength(0) - 1) && j != 0 && j != (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
             }
-            if (i == (this.cristal.GetLength(0) - 1) && j == (this.cristal.GetLength(0) - 1))
+            else if (i == (this.cristal.GetLength(0) - 1) && j == (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
             }
             //BC j=0 in the middle
-            if (j == 0 && i != 0 && i != (this.cristal.GetLength(0) - 1))
+            else if (j == 0 && i != 0 && i != (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j].GetPhase()) / Math.Pow(delta_space, 2);
             }
             //BC j=N-1 in the middle
-            if (j == this.cristal.GetLength(0) && i != 0 && i != (this.cristal.GetLength(0) - 1))
+            else if (j == (this.cristal.GetLength(0)-1) && i != 0 && i != (this.cristal.GetLength(0) - 1))
             {
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
