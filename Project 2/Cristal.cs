@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using ClassesCristal;
 
-namespace Cristales
+namespace ClassesCristal
 {
     class Cristal
     {
@@ -87,7 +88,7 @@ namespace Cristales
             }
 
         }
-            
+         
         //MATH METHODS
 
         //Function to obtain the laplatian of the Temperature in a given cell
