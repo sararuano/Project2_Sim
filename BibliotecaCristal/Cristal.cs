@@ -29,10 +29,10 @@ namespace BibliotecaCristal
                 int j = 0;
                 while (j < filas)
                 {
-                    double x = Math.Round((filas - 1) * (-delta_space) / 2 + delta_space * i, 4);
-                    double y = Math.Round((filas - 1) * (-delta_space) / 2 + delta_space * j, 4);
-                    double temp = -1;
-                    double phase = 1;
+                    double x = Math.Round((filas - 1) * (-delta_space) / 2 + delta_space * i, 5);
+                    double y = Math.Round((filas - 1) * (-delta_space) / 2 + delta_space * j, 5);
+                    double temp = -1.0;
+                    double phase = 1.0;
                     Celda cell = new Celda(x, y, temp, phase);
                     this.cristal[i, j] = cell;
                     j++;
@@ -103,24 +103,25 @@ namespace BibliotecaCristal
         {
             Celda[,] futurecristall = new Celda[this.cristal.GetLength(0), this.cristal.GetLength(0)];
             int i = 0;
-            int count = 0;
+            //int count = 0;
             while (i < futurecristall.GetLength(0))
             {
                 int j = 0;
                 while (j < futurecristall.GetLength(0))
                 {
+                    double x = this.cristal[i,j].GetX();
+                    double y = this.cristal[i,j].GetY();
 
-                    double x = Math.Round((futurecristall.GetLength(0) - 1) / 2 * (-delta_space) + delta_space * i, 4);
-                    double y = Math.Round((futurecristall.GetLength(0) - 1) / 2 * (-delta_space) + delta_space * j, 4);
+                    //double y = Math.Round((futurecristall.GetLength(0) - 1) / 2 * (-delta_space) + delta_space * j, 5);
                     double lapT = this.T_Laplatian(i, j);
                     double lapPh = this.Ph_Laplatian(i, j);
                     double deltap_t = this.cristal[i, j].Set_Diff_Phase(eps, m, alpha, delta, lapPh);
                     double deltaT_t = this.cristal[i, j].Set_Diff_Temperature(eps, m, alpha, delta, lapPh, lapT);
                     double newphase = this.cristal[i, j].GetPhase() + deltap_t * delta_time;
                     double newTemperature = this.cristal[i, j].GetTemperature() + deltaT_t * delta_time;
-                    Celda cell = new Celda(x, y, Math.Round(newTemperature,4), Math.Round(newphase,4));
+                    Celda cell = new Celda(x, y, Math.Round(newTemperature,10), Math.Round(newphase,10));
                     futurecristall[i, j] = cell;
-                    count++;
+                    //count++;
                     //Console.WriteLine(count.ToString()+ " i:"+i.ToString()+" j:"+j.ToString());
                     //Lo usé para encontar een que paso hay fallo, lo eliminamos al final por si se necesita
                     j++;
@@ -187,7 +188,7 @@ namespace BibliotecaCristal
                 Txx = (this.cristal[i + 1, j].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i - 1, j].GetTemperature()) / Math.Pow(delta_space, 2);
                 Tyy = (this.cristal[i, j + 1].GetTemperature() - 2 * this.cristal[i, j].GetTemperature() + this.cristal[i, j - 1].GetTemperature()) / Math.Pow(delta_space, 2);
             }
-            double lap = Math.Round(Txx + Tyy,4);
+            double lap = Txx + Tyy;
             return lap;
             
         }
@@ -247,7 +248,7 @@ namespace BibliotecaCristal
                 Pxx = (this.cristal[i + 1, j].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i - 1, j].GetPhase()) / Math.Pow(delta_space, 2);
                 Pyy = (this.cristal[i, j + 1].GetPhase() - 2 * this.cristal[i, j].GetPhase() + this.cristal[i, j - 1].GetPhase()) / Math.Pow(delta_space, 2);
             }
-            double lap = Math.Round(Pxx + Pyy,4);
+            double lap = Pxx + Pyy;
             return lap;
         }
 

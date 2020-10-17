@@ -69,7 +69,7 @@ namespace BibliotecaCristal
         public double Set_Diff_Phase(double eps, double m, double alpha, double delta, double p_laplatian)
         {
             double phase = this.GetPhase();
-            double Set_Diff_Phase = (phase * (1 - phase) * (phase - 0.5 + 30 * eps * alpha * delta * (1 - delta))) / (m * Math.Pow(eps, 2)) + Math.Pow(eps, 2) * p_laplatian;
+            double Set_Diff_Phase = (phase * (1 - phase) * (phase - 0.5 + 30 * eps * alpha * delta *phase* (1 - phase))) / (m * Math.Pow(eps, 2)) + p_laplatian/m;
             return Set_Diff_Phase;
         }
 
