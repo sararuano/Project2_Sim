@@ -60,5 +60,10 @@ namespace Amplicacion
                 ListParametros.Items.Add(par.GetName());
             }
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
