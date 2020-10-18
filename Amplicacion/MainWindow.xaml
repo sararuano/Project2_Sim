@@ -6,26 +6,8 @@
         xmlns:local="clr-namespace:Amplicacion"
         mc:Ignorable="d"
         Title="MainWindow" Height="234" Width="437.6">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition Height="100"></RowDefinition>
-        </Grid.RowDefinitions>
-        <ListBox Name="ListParametros" HorizontalContentAlignment="Stretch">
-            <DataTemplate>
-                <Grid Margin="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    
-                    
-                </Grid>
-                
-            </DataTemplate>
-            
-        </ListBox>
-    </Grid>
+    <ListBox x:Name="ListParametros" HorizontalAlignment="Left" Height="50" Margin="40,20,0,0" VerticalAlignment="Top" Width="70" SelectionChanged="ListBox_SelectionChanged_1">
+        
+    </ListBox>
+    
 </Window>

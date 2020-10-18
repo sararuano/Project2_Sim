@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace BibliotecaCristal
 {
-    class Parametros
+    public class Parametros
     {
         //ATRIBUTES
+        string name;
         double eps;
         double m;
         double delta;
@@ -20,8 +21,9 @@ namespace BibliotecaCristal
         //METHODS
 
         // Si no se introduce delta_time ni delta_spice se dan por defecto
-        public Parametros (double eps, double m,double delta, double alpha)
+        public Parametros(string name, double eps, double m, double delta, double alpha)
         {
+            this.name = name;
             this.eps = eps;
             this.m = m;
             this.delta = delta;
@@ -31,14 +33,19 @@ namespace BibliotecaCristal
         }
 
         // Si se introduce delta_time ni delta_spice se les da un valor
-        public Parametros(double eps, double m, double delta, double alpha, double delta_space, double delta_time)
+        public Parametros(string name, double eps, double m, double delta, double alpha, double delta_space, double delta_time)
         {
+            this.name = name;
             this.eps = eps;
             this.m = m;
             this.delta = delta;
             this.alpha = alpha;
             this.delta_space = delta_space;
             this.delta_time = delta_time;
+        }
+        public string GetName()
+        {
+            return name;
         }
     }
 }
