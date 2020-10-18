@@ -47,5 +47,29 @@ namespace BibliotecaCristal
         {
             return name;
         }
+        public double GetEpsilon()
+        {
+            return eps;
+        }
+        public double Getm()
+        {
+            return m;
+        }
+        public double GetDelta()
+        {
+            return delta;
+        }
+        public double GetAlpha()
+        {
+            return alpha;
+        }
+        public double GetDeltaSpace()
+        {
+            return delta_space;
+        }
+        public double GetDeltaTime()
+        {
+            return delta_time;
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         List<Parametros> listaParametros;
+        Parametros selectedParametros;
 
         public MainWindow()
         {
@@ -45,25 +46,73 @@ namespace Amplicacion
         // si Default == false, usara los vaalores de listPar para llenar la lista y el listBox
         public void fillNewListParametros(bool Default, List<Parametros> listPar)
         {
-            ListParametros.Items.Clear();
+            ListBoxParametros.Items.Clear();
             listaParametros = new List<Parametros>();
             if (Default == true)
             {
-                listaParametros.Add(new Parametros("Param. 1", 0.005, 20, 0.5, 400));
-                listaParametros.Add(new Parametros("Param. 2", 0.005, 30, 0.7, 300));
+                listaParametros.Add(new Parametros("Parámetros 1", 0.005, 20, 0.5, 400));
+                listaParametros.Add(new Parametros("Parámetros 2", 0.005, 30, 0.7, 300));
+                selectedParametros = listaParametros[0];
+                SetTextParametros(selectedParametros);
             }
             else
                 listaParametros = listPar;
 
             foreach (Parametros par in listaParametros)
             {
-                ListParametros.Items.Add(par.GetName());
+                ListBoxParametros.Items.Add(par.GetName());
             }
+            
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+        //    Localiza de la lista de posibles parametros cuál es el clicado, lo selecciona (selectedParametros) 
+        //    y llama a la funcion SetTextParametros que los escribe abajo
+        private void ListParametros_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            string selectedParametro = ListBoxParametros.SelectedItem.ToString();
+            foreach (Parametros par in listaParametros)
+            {
+                if (par.GetName() == selectedParametro)
+                {
+                    //Select new Par
+                    selectedParametros = par;
+                    SetTextParametros(par);
+                }
+            }
+        }
+        // Escribe los parametros en los  textbox para la clase de Parametros dada
+        private void SetTextParametros(Parametros par)
+        {
+            textSelectedPar.Text=par.GetName();
+            textEpsilon.Text=par.GetEpsilon().ToString();
+            textM.Text = par.Getm().ToString();
+            textDelta.Text=par.GetDelta().ToString();
+            textAlpha.Text=par.GetAlpha().ToString();
+            textDeltaSpace.Text=par.GetDeltaSpace().ToString();
+            textDeltaTime.Text=par.GetDeltaTime().ToString();
+                    
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            NewParametrosWindow parametrosVentana = new NewParametrosWindow(listaParametros.Count()+1);
+            parametrosVentana.ShowDialog();
+            if (parametrosVentana.GetError() == true)
+                MessageBox.Show("The creation of a new set of parameters was cancelled");
+            else
+            {
+                listaParametros.Add(parametrosVentana.GetParmetros());
+                ListBoxParametros.Items.Add(parametrosVentana.GetParmetros().GetName());
+                MessageBox.Show("The set of parameters "+(listaParametros.Count).ToString()+" was created");
+            }
+
+            
+            
         }
     }
 }
