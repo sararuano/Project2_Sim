@@ -54,6 +54,7 @@ namespace Amplicacion
                 listaParametros.Add(new Parametros("Parámetros 2", 0.005, 30, 0.7, 300));
                 selectedParametros = listaParametros[0];
                 SetTextParametros(selectedParametros);
+                CreateDataGrid(15);
             }
             else
                 listaParametros = listPar;
@@ -110,9 +111,30 @@ namespace Amplicacion
                 ListBoxParametros.Items.Add(parametrosVentana.GetParmetros().GetName());
                 MessageBox.Show("The set of parameters "+(listaParametros.Count).ToString()+" was created");
             }
+        }
+        private void CreateDataGrid(int filas)
+        {
+            //Define the grid
+            
+            int count = 0;
+            while (count < filas - 1)
+            {
+                //Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
+                count++;
 
+            }
+            int count2 = 0;
+            while (count2 < filas - 1)
+            {
+                //Rejilla.RowDefinitions.Add(new RowDefinition());
+                count++;
+            }
             
-            
+        }
+
+        private void Rejilla_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
