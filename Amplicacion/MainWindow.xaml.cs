@@ -25,6 +25,13 @@ namespace Amplicacion
         public MainWindow()
         {
             InitializeComponent();
+            
+            List<Parametros>
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
