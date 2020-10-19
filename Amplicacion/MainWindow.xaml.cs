@@ -119,15 +119,15 @@ namespace Amplicacion
             int count = 0;
             while (count < filas - 1)
             {
-                //Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
+                Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
                 count++;
 
             }
             int count2 = 0;
             while (count2 < filas - 1)
             {
-                //Rejilla.RowDefinitions.Add(new RowDefinition());
-                count++;
+                Rejilla.RowDefinitions.Add(new RowDefinition());
+                count2++;
             }
             
         }
