@@ -22,26 +22,18 @@ namespace Amplicacion
     /// </summary>
     public partial class MainWindow : Window
     {
+        Cristal cris;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            
             fillNewListParametros(true, new List<Parametros>());
+            CreateDataGridyCristal(15);
+            
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void ListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
         // Default == true pondra los valores por defecto y listPar no se utilizara ya que estara vacío, 
         // si Default == false, usara los vaalores de listPar para llenar la lista y el listBox
         public void fillNewListParametros(bool Default, List<Parametros> listPar)
@@ -54,7 +46,7 @@ namespace Amplicacion
                 listaParametros.Add(new Parametros("Parámetros 2", 0.005, 30, 0.7, 300));
                 selectedParametros = listaParametros[0];
                 SetTextParametros(selectedParametros);
-                CreateDataGrid(15);
+                
             }
             else
                 listaParametros = listPar;
@@ -63,13 +55,8 @@ namespace Amplicacion
             {
                 ListBoxParametros.Items.Add(par.GetName());
             }
-            
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
         //    Localiza de la lista de posibles parametros cuál es el clicado, lo selecciona (selectedParametros) 
         //    y llama a la funcion SetTextParametros que los escribe abajo
         private void ListParametros_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -85,6 +72,7 @@ namespace Amplicacion
                 }
             }
         }
+
         // Escribe los parametros en los  textbox para la clase de Parametros dada
         private void SetTextParametros(Parametros par)
         {
@@ -95,10 +83,9 @@ namespace Amplicacion
             textAlpha.Text=par.GetAlpha().ToString();
             textDeltaSpace.Text=par.GetDeltaSpace().ToString();
             textDeltaTime.Text=par.GetDeltaTime().ToString();
-                    
-
         }
 
+        // Abre la ventana que perite seleccionar crear una nueva coleccion de poarametros
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             NewParametrosWindow parametrosVentana = new NewParametrosWindow(listaParametros.Count()+1);
@@ -112,29 +99,37 @@ namespace Amplicacion
                 MessageBox.Show("The set of parameters "+(listaParametros.Count).ToString()+" was created");
             }
         }
-        private void CreateDataGrid(int filas)
+        private void CreateDataGridyCristal(int filas)
         {
             //Define the grid
-            
             int count = 0;
             while (count < filas - 1)
             {
-                //Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
+                Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
                 count++;
 
             }
             int count2 = 0;
             while (count2 < filas - 1)
             {
-                //Rejilla.RowDefinitions.Add(new RowDefinition());
-                count++;
+                Rejilla.RowDefinitions.Add(new RowDefinition());
+                count2++;
             }
+            cris = new Cristal(filas);
             
         }
 
-        private void Rejilla_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Escribe los índices de la celda clicada
+        private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            double width = Convert.ToDouble(Rejilla.Width);
+            int filas = Rejilla.ColumnDefinitions.Count();
+            double widthCasilla = width / filas;
+            double x = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X),3);
+            double y = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y),3);
+            
+            textX.Text =Math.Round(((x-widthCasilla/2)/widthCasilla),0).ToString();
+            textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
         }
     }
 }
