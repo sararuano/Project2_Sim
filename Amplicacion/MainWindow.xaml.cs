@@ -25,7 +25,7 @@ namespace Amplicacion
         Cristal cris;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
-
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +46,6 @@ namespace Amplicacion
                 listaParametros.Add(new Parametros("Parámetros 2", 0.005, 30, 0.7, 300));
                 selectedParametros = listaParametros[0];
                 SetTextParametros(selectedParametros);
-                
             }
             else
                 listaParametros = listPar;
@@ -103,21 +102,21 @@ namespace Amplicacion
         {
             //Define the grid
             int count = 0;
-            while (count < filas - 1)
+            while (count < filas)
             {
                 Rejilla.ColumnDefinitions.Add(new ColumnDefinition());
                 count++;
 
             }
             int count2 = 0;
-            while (count2 < filas - 1)
+            while (count2 < filas)
             {
                 Rejilla.RowDefinitions.Add(new RowDefinition());
                 count2++;
             }
             cris = new Cristal(filas);
-            
-        }
+            Rejilla.Visibility = Visibility.Visible;
+            SetTempRejilla(5,6);        }
 
         // Escribe los índices de la celda clicada
         private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -130,6 +129,21 @@ namespace Amplicacion
             
             textX.Text =Math.Round(((x-widthCasilla/2)/widthCasilla),0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
+        }
+        private void SetTempRejilla(int fila, int columna)
+        {
+            double width = Convert.ToDouble(Rejilla.Width);
+            int filas = Rejilla.ColumnDefinitions.Count();
+            Rectangle RecGrid = new Rectangle();
+            
+            double GridWidth=width / filas;
+            RecGrid.Width = GridWidth;
+            RecGrid.Height = RecGrid.Width;
+            RecGrid.Visibility = Visibility.Visible;
+
+            Point p = new Point(fila * GridWidth, width - columna * GridWidth);
+            RecGrid.TranslatePoint(p,Rejilla);
+
         }
     }
 }
