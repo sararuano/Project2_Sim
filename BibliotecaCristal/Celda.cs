@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace ClassesCristal
+namespace BibliotecaCristal
 {
     public class Celda
     {
@@ -12,7 +13,7 @@ namespace ClassesCristal
         double y;           //y-component
         double T;           //Temperature -1 if liquid and 0 if solid
         double phase;       //phase 1 if liquid and 0 solid
-        
+
         //CONSTRUCTOR
         public Celda(double x, double y, double T, double phase)
         {
@@ -68,10 +69,10 @@ namespace ClassesCristal
         public double Set_Diff_Phase(double eps, double m, double alpha, double delta, double p_laplatian)
         {
             double phase = this.GetPhase();
-            double Set_Diff_Phase = (phase * (1 - phase) * (phase - 0.5 + 30 * eps * alpha * delta * (1 - delta))) / (m * Math.Pow(eps,2)) + Math.Pow(eps, 2) * p_laplatian;
+            double Set_Diff_Phase = (phase * (1 - phase) * (phase - 0.5 + 30 * eps * alpha * delta *phase* (1 - phase))) / (m * Math.Pow(eps, 2)) + p_laplatian/m;
             return Set_Diff_Phase;
         }
-        
+
         //Compute the difference of temperature wrt time
         public double Set_Diff_Temperature(double eps, double m, double alpha, double delta, double p_laplatian, double T_laplatian)
         {
