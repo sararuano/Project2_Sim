@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -49,6 +50,13 @@ namespace BibliotecaCristal
 
         //METHODS
 
+        //
+        public Celda GetCeldaij(int i,int j)
+        {
+            Celda[] fila = this.GetRow(i);
+
+            return fila[j];
+        }
         //Obtain cell in cristal
         public Celda GetCelda(double x, double y)
         {
