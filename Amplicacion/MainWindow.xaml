@@ -42,8 +42,11 @@
         </Grid>
         <Button HorizontalAlignment="Left" Content="Add new Pareameters" Margin="50,10,0.4,0" Width="105" Height="15" FontSize="10" Click="Button_Click"/>
 
-        <Grid x:Name="Rejilla" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="420,-150,0,0" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" ShowGridLines="True" Background="#FFD1CCCC" Visibility="Visible">
-
+        <Button HorizontalAlignment="Left" Content="STEP" Margin="30,10,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click"/>
+        <Button HorizontalAlignment="Left" Content="AUTO" Margin="70,-22,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click"/>
+        <Button HorizontalAlignment="Left" Content="SLOW" Margin="110,-22,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click"/>
+        <Button HorizontalAlignment="Left" Content="FAST" Margin="150,-22,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click"/>
+        <Grid x:Name="Rejilla" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="220,-185,0,0" Background="Gray" ShowGridLines="True" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown">
             <Grid.ColumnDefinitions ></Grid.ColumnDefinitions>
             <Grid.RowDefinitions></Grid.RowDefinitions>
             <Rectangle x:Name="BoxExample" Stroke="Black" Margin="0,0,0,0" Fill="Black" Visibility="Hidden" />
@@ -64,6 +67,7 @@
             <TextBox x:Name="labelY" Text="RowIndex:" HorizontalAlignment="Left" Height="14" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" FontSize="10"  Grid.Column="0" Grid.Row="0" BorderBrush="White"/>
 
         </Grid>
+
         <Grid x:Name="RejillaT" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="220,-250,0,0" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown" Visibility="Hidden" ShowGridLines="True">
 
             <Grid.ColumnDefinitions ></Grid.ColumnDefinitions>
