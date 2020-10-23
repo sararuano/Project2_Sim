@@ -363,8 +363,9 @@ namespace Amplicacion
 
         }
 
-
-
-
+        private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
