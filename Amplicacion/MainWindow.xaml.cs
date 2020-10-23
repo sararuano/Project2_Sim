@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;  //posem el timer d'aquesta manera
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -25,6 +26,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
+        int dias;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
         StackPanel[,] pan;
@@ -37,6 +39,16 @@ namespace Amplicacion
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
             createTempIndicator(200);
+
+            DispatcherTimer clock_time = new DispatcherTimer();
+            clock_time.Interval = new TimeSpan(0, 0, 1);  // in hour, minutes, second
+            clock_time.Tick += clock_time_Tick;
+            clock_time.Start();
+        }
+
+        public void clock_time_Tick(object sender, EventArgs e)
+        {
+
         }
 
         // Default == true pondra los valores por defecto y listPar no se utilizara ya que estara vacío, 
@@ -117,6 +129,14 @@ namespace Amplicacion
             paintInitialT();
         }
 
+        private void Auto_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (Convert.ToString(Auto_Button.Content) == "AUTO")
+            {
+                //poner el timer
+            }
+
+        }
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
             //Define the grid
@@ -383,6 +403,7 @@ namespace Amplicacion
         {
 
         }
+
     }
         
 }
