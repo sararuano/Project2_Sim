@@ -33,8 +33,8 @@ namespace Amplicacion
         {
             InitializeComponent();
             fillNewListParametros(true, new List<Parametros>());
-            CreateDataGridyCristal(Rejilla,15);
-            pan = new StackPanel[Rejilla.RowDefinitions.Count() , Rejilla.RowDefinitions.Count() ];
+            CreateDataGridyCristal(Rejilla, 15);
+            pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
             createTempIndicator(200);
         }
@@ -106,7 +106,20 @@ namespace Amplicacion
                 MessageBox.Show("The set of parameters " + (listaParametros.Count).ToString() + " was created");
             }
         }
-        private Grid CreateDataGridyCristal(Grid Rej,int filas)
+
+        private void Button_Click_Step(object sender, RoutedEventArgs e)
+        {
+            double eps = selectedParametros.GetEpsilon();
+            double m = selectedParametros.Getm();
+            double alpha = selectedParametros.GetAlpha();
+            double delta = selectedParametros.GetDelta();
+            cris.NextDay(eps, m, alpha, delta);
+            paintInitialT();
+        }
+
+
+
+        private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
             //Define the grid
             int count = 0;
@@ -143,10 +156,10 @@ namespace Amplicacion
 
 
         // Añade un stackpanel a cada celda del grid seleccionado y la pinta del color seleccionado
-        private Grid CreateGridPanel( Color color)
+        private Grid CreateGridPanel(Color color)
         {
             int filas = Rejilla.RowDefinitions.Count();
-            
+
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
@@ -155,10 +168,10 @@ namespace Amplicacion
                 {
                     StackPanel pan1 = new StackPanel();
                     Brush paint = new SolidColorBrush(color);
-                         
+
                     pan1.Background = paint;
 
-                    pan[irow, icol]=pan1;
+                    pan[irow, icol] = pan1;
 
                     Grid.SetRow(pan1, irow);
                     Grid.SetColumn(pan1, icol);
@@ -168,7 +181,7 @@ namespace Amplicacion
                     icol++;
                 }
                 irow++;
-                
+
             }
             return Rejilla;
         }
@@ -178,14 +191,14 @@ namespace Amplicacion
             int index = TempPhaseBox.SelectedIndex;
             if (index == 0)
             {
-                
+
 
 
             }
-            else if (index==1)
+            else if (index == 1)
             {
-                
-                
+
+
             }
             else { }
         }
@@ -195,11 +208,11 @@ namespace Amplicacion
         private void SetColorTemp(double temp, int fila, int columna)
         {
             int filas = Rejilla.RowDefinitions.Count();
-            fila = filas-1 - fila;
+            fila = filas - 1 - fila;
             Rejilla.Children.Clear();
 
-            byte R = Convert.ToByte(Math.Round(-1*temp * 255,0));
-            Color colorset = Color.FromArgb(100,255, R, 0);
+            byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+            Color colorset = Color.FromArgb(100, 255, R, 0);
             Brush colorBrush = new SolidColorBrush(colorset);
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
@@ -210,7 +223,7 @@ namespace Amplicacion
                     if (columna == icol && fila == irow)
                     {
                         StackPanel panel = new StackPanel();
-                        panel.Background =colorBrush;
+                        panel.Background = colorBrush;
                         pan[irow, icol] = panel;
                         Grid.SetRow(panel, irow);
                         Grid.SetColumn(panel, icol);
@@ -224,7 +237,7 @@ namespace Amplicacion
                             brus = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
                         else
                         {
-                            brus= pan[irow, icol].Background;
+                            brus = pan[irow, icol].Background;
                         }
                         panel.Background = brus;
                         panel.Visibility = Visibility.Visible;
@@ -234,9 +247,9 @@ namespace Amplicacion
                     }
                     icol++;
                 }
-                irow++; 
+                irow++;
             }
-            
+
             // Pendiente de quitar si se pudiese
             int iirow = 0;
             foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
@@ -256,7 +269,7 @@ namespace Amplicacion
                 iirow++;
             }
 
-            cris.GetCeldaij(14-fila, columna).SetTemperature(temp);
+            cris.GetCeldaij(14 - fila, columna).SetTemperature(temp);
         }
         // Asigna un valor de temperatura a una celda concreta al presionar el boton
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -271,8 +284,8 @@ namespace Amplicacion
             double neg = 1;
             foreach (char pos in Tchar)
             {
-                
-                if (Tchar[0] == '-' && neg==1 && count==0)
+
+                if (Tchar[0] == '-' && neg == 1 && count == 0)
                 {
                     count = count - 1;
                     neg = -1;
@@ -283,16 +296,16 @@ namespace Amplicacion
                     string posstr = pos.ToString();
                     T = T + Convert.ToDouble(posstr);
                 }
-                else if (count == 1 && Tchar[count-1] == '0')
+                else if (count == 1 && Tchar[count - 1] == '0')
                 { }
-                else if (count>1)
+                else if (count > 1)
                 {
                     string posstr = pos.ToString();
                     T = T + Convert.ToDouble(posstr) / (10 ^ (count - 1));
                 }
-                else if(Tstr=="0")
+                else if (Tstr == "0")
                 {
-                    T =0;
+                    T = 0;
                     break;
                 }
                 else if (Tstr == "-1")
@@ -319,13 +332,13 @@ namespace Amplicacion
             }
             else
                 MessageBox.Show("Limit values are RowIndex: [0," + filas.ToString() + "], ColumnIndex: [0," + filas.ToString() + "] and T: [-1,0]. Check them!");
-           
+
         }
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura a las celdas 
         private void paintInitialT()
         {
-            int i=0;
-            while (i<Rejilla.RowDefinitions.Count())
+            int i = 0;
+            while (i < Rejilla.RowDefinitions.Count())
             {
                 Celda[] fila = cris.GetRow(i);
                 int j = 0;
@@ -346,26 +359,27 @@ namespace Amplicacion
                 TempIndicator.RowDefinitions.Add(new RowDefinition());
                 count++;
             }
-            count=0;
+            count = 0;
             double temp = 0;
             foreach (RowDefinition row in TempIndicator.RowDefinitions)
             {
                 Double filasD = Convert.ToDouble(filas);
                 StackPanel panel = new StackPanel();
-                byte R = Convert.ToByte(Math.Round(255+temp * 255, 0));
+                byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
                 Color colorset = Color.FromArgb(100, 255, R, 0);
                 panel.Background = new SolidColorBrush(colorset);
                 Grid.SetRow(panel, count);
                 TempIndicator.Children.Add(panel);
                 count++;
-                temp = temp - 1/filasD;
+                temp = temp - 1 / filasD;
             }
 
         }
 
         private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
         }
     }
+        
 }
