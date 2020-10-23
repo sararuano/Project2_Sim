@@ -420,11 +420,13 @@ namespace Amplicacion
 
         }
 
+
         private void Fast_Button_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
+
+
     }
-        
 }

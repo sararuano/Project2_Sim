@@ -43,7 +43,12 @@
         </Grid>
         <Button x:Name="Add_Param_Button" HorizontalAlignment="Left" Content="Add new Pareameters" Margin="50,10,0.4,0" Width="105" Height="15" FontSize="10" Click="Button_Click"/>
         <Button x:Name="Step_Button" HorizontalAlignment="Left" Content="STEP" Margin="30,10,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click_Step"/>
+
         <Button x:Name="Auto_Button" HorizontalAlignment="Left" Content="AUTO" Margin="70,-22,0,0" Width="30" Height="22" FontSize="12" Click="Auto_Button_Click" />
+
+
+        <Button x:Name="Auto_Button" HorizontalAlignment="Left" Content="AUTO" Margin="70,-22,0,0" Width="30" Height="22" FontSize="12" />
+
         <Button x:Name="Slow_Button" HorizontalAlignment="Left" Content="SLOW" Margin="110,-22,0,0" Width="30" Height="22" FontSize="10" />
         <Button x:Name="SLOW" HorizontalAlignment="Left" Content="FAST" Margin="150,-22,0,0" Width="30" Height="22" FontSize="10" />
         <ComboBox x:Name="TempPhaseBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="22" Margin="220,-220,0,0" SelectionChanged="TempPhaseBox_SelectionChanged"/>
