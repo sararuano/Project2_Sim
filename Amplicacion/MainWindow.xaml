@@ -52,7 +52,7 @@
         <Button x:Name="Slow_Button" HorizontalAlignment="Left" Content="SLOW" Margin="110,-22,0,0" Width="30" Height="22" FontSize="10" />
         <Button x:Name="SLOW" HorizontalAlignment="Left" Content="FAST" Margin="150,-22,0,0" Width="30" Height="22" FontSize="10" />
         <ComboBox x:Name="TempPhaseBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="22" Margin="220,-220,0,0" SelectionChanged="TempPhaseBox_SelectionChanged"/>
-        <Label Content="Label" Height="13"/>
+        <Label x:Name="dia_box" Height="31" Margin="70,5,0,0" Width="70" HorizontalAlignment="Left"/>
         <Grid x:Name="HuecoRejilla" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="220,-180,0,0" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" Visibility="Visible">
             <Grid.ColumnDefinitions >
                 <ColumnDefinition />
@@ -68,7 +68,7 @@
                 <Grid.RowDefinitions></Grid.RowDefinitions>
             </Grid>
         </Grid>
-        
+
         <Rectangle x:Name="BoxExample" Stroke="Black" Margin="0,0,0,0" Fill="Black" Visibility="Hidden" />
 
         <Grid HorizontalAlignment="Left" Margin="220,10,0,0" RenderTransformOrigin="-0.262,0.444">
@@ -111,13 +111,13 @@
             <Grid.ColumnDefinitions ></Grid.ColumnDefinitions>
             <Grid.RowDefinitions></Grid.RowDefinitions>
         </Grid>
-        <Button Content="Set Temperature" Width="100" Height="20" Margin="350,-50,0,0" RenderTransformOrigin="0.5,0.5" Click="Button_Click_1" Background="#00000000"/>
+        <Button Content="Set Temperature" Width="100" Height="20" Margin="350,-65,0,0" RenderTransformOrigin="0.5,0.5" Click="Button_Click_1" Background="#00000000"/>
         <Grid x:Name="TempIndicator" Height="200" Width="20" Margin="190,-340,0,0">
             <Grid.RowDefinitions></Grid.RowDefinitions>
         </Grid>
         <TextBox x:Name="text0" Text="Temp: -1" Width="50" Height="18" BorderBrush="White" Margin="260,-520,0,0" FontSize="8" />
         <TextBox x:Name="text1" Text="Temp: 0" Width="50" Height="18" BorderBrush="White" Margin="260,-160,0,0" FontSize="8"/>
-        
+
 
     </StackPanel>
 
