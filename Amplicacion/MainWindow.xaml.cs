@@ -117,8 +117,6 @@ namespace Amplicacion
             paintInitialT();
         }
 
-
-
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
             //Define the grid
@@ -380,8 +378,6 @@ namespace Amplicacion
         {
 
         }
-
-
 
     }
 }
