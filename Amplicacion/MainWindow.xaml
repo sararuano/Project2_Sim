@@ -45,7 +45,7 @@
         <Button x:Name="Step_Button" HorizontalAlignment="Left" Content="STEP" Margin="30,10,0,0" Width="30" Height="22" FontSize="10" Click="Button_Click_Step"/>
         <Button x:Name="Auto_Button" HorizontalAlignment="Left" Content="AUTO" Margin="70,-22,0,0" Width="30" Height="22" FontSize="10" Click="Auto_Button_Click"/>
         <Button x:Name="Slow_Button" HorizontalAlignment="Left" Content="SLOW" Margin="110,-22,0,0" Width="30" Height="22" FontSize="10" Click="Slow_Button_Click"/>
-        <Button HorizontalAlignment="Left" Content="FAST" Margin="150,-22,0,0" Width="30" Height="22" FontSize="10" Click="Fast_Button_Click"/>
+        <Button x:Name="Fast_Button" HorizontalAlignment="Left" Content="FAST" Margin="150,-22,0,0" Width="30" Height="22" FontSize="10" Click="Fast_Button_Click"/>
         <ComboBox x:Name="TempPhaseBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="22" Margin="220,-220,0,0" SelectionChanged="TempPhaseBox_SelectionChanged"/>
         <Grid x:Name="HuecoRejilla" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="220,-180,0,0" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" Visibility="Visible">
             <Grid.ColumnDefinitions >
