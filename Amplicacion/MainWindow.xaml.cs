@@ -26,7 +26,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
-        int dias;
+        int steps;
         DispatcherTimer clock_time;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
@@ -37,8 +37,8 @@ namespace Amplicacion
             InitializeComponent();
 
             //definim el primer dia
-            dias = 1;
-            dia_box.Content = Convert.ToString(dias);
+            steps = 1;
+            step_box.Content = Convert.ToString(steps);
 
             //rejilla
             fillNewListParametros(true, new List<Parametros>());
@@ -49,13 +49,13 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(dias);
+            clock_time.Interval = new TimeSpan(steps);
         }
 
         public void clock_time_Tick(object sender, EventArgs e)
         {
-            dias = dias + 1;
-            dia_box.Content = Convert.ToString(dias);
+            steps = steps + 1;
+            step_box.Content = Convert.ToString(steps);
 
             double eps = selectedParametros.GetEpsilon();
             double m = selectedParametros.Getm();
@@ -135,8 +135,8 @@ namespace Amplicacion
 
         private void Button_Click_Step(object sender, RoutedEventArgs e)
         {
-            dias = dias + 1;
-            dia_box.Content = Convert.ToString(dias);
+            steps = steps + 1;
+            step_box.Content = Convert.ToString(steps);
 
             double eps = selectedParametros.GetEpsilon();
             double m = selectedParametros.Getm();
