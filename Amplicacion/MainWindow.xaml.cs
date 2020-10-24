@@ -180,6 +180,12 @@ namespace Amplicacion
 
         }
 
+        //**VACÍA** Lo que pasaría si abriesemos la consola
+        private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         //**************************************************************************************************
 
         //EVENTOS
@@ -204,11 +210,13 @@ namespace Amplicacion
             double width = Convert.ToDouble(Rejilla.Width);
             int filas = Rejilla.ColumnDefinitions.Count();
             double widthCasilla = width / filas;
-            double x = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
-            double y = Math.Round(width - Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
+            double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
+            double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
+            //double temperature = cris.GetCeldaij(Convert.ToInt32(x), Convert.ToInt32(y)).GetTemperature();
 
             textX.Text = Math.Round(((x - widthCasilla / 2) / widthCasilla), 0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
+            //textTemp.Text = temperature.ToString();
         }
 
         // Econde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
@@ -444,7 +452,5 @@ namespace Amplicacion
         }
 
         
-
-
     }
 }
