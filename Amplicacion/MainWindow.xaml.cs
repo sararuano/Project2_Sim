@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;  //posem el timer d'aquesta manera
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -25,6 +26,8 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
+        int dias;
+        DispatcherTimer clock_time;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
         StackPanel[,] pan;
@@ -32,11 +35,34 @@ namespace Amplicacion
         public MainWindow()
         {
             InitializeComponent();
+
+            //definim el primer dia
+            dias = 1;
+            dia_box.Content = Convert.ToString(dias);
+
+            //rejilla
             fillNewListParametros(true, new List<Parametros>());
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
             createTempIndicator(200);
+
+            clock_time = new DispatcherTimer();
+            clock_time.Tick += new EventHandler(clock_time_Tick);
+            clock_time.Interval = new TimeSpan(dias);
+        }
+
+        public void clock_time_Tick(object sender, EventArgs e)
+        {
+            dias = dias + 1;
+            dia_box.Content = Convert.ToString(dias);
+
+            double eps = selectedParametros.GetEpsilon();
+            double m = selectedParametros.Getm();
+            double alpha = selectedParametros.GetAlpha();
+            double delta = selectedParametros.GetDelta();
+            cris.NextDay(eps, m, alpha, delta);
+            paintInitialT();
         }
 
         // Default == true pondra los valores por defecto y listPar no se utilizara ya que estara vacío, 
@@ -109,14 +135,29 @@ namespace Amplicacion
 
         private void Button_Click_Step(object sender, RoutedEventArgs e)
         {
+            dias = dias + 1;
+            dia_box.Content = Convert.ToString(dias);
+
             double eps = selectedParametros.GetEpsilon();
             double m = selectedParametros.Getm();
             double alpha = selectedParametros.GetAlpha();
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta);
             paintInitialT();
+
         }
 
+        private void Auto_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (Convert.ToString(Auto_Button.Content) == "AUTO")
+            {  
+                clock_time.Start();
+            }
+            else
+            {
+                clock_time.Stop();
+            }
+        }
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
             //Define the grid
@@ -378,6 +419,14 @@ namespace Amplicacion
         {
 
         }
+
+
+        private void Fast_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
 
     }
 }
