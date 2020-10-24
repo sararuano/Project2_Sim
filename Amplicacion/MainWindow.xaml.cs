@@ -52,6 +52,7 @@ namespace Amplicacion
             clock_time.Interval = new TimeSpan(steps);
         }
 
+        //Cada vez que passa un tick
         public void clock_time_Tick(object sender, EventArgs e)
         {
             steps = steps + 1;
@@ -152,10 +153,12 @@ namespace Amplicacion
             if (Convert.ToString(Auto_Button.Content) == "AUTO")
             {  
                 clock_time.Start();
+                Auto_Button.Content = "STOP";
             }
             else
             {
                 clock_time.Stop();
+                Auto_Button.Content = "AUTO";
             }
         }
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
