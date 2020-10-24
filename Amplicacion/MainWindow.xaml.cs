@@ -212,11 +212,11 @@ namespace Amplicacion
             double widthCasilla = width / filas;
             double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
             double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
-            //double temperature = cris.GetCeldaij(Convert.ToInt32(x), Convert.ToInt32(y)).GetTemperature();
+            double temperature = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetTemperature();
 
             textX.Text = Math.Round(((x - widthCasilla / 2) / widthCasilla), 0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
-            //textTemp.Text = temperature.ToString();
+            textTemp.Text = temperature.ToString();
         }
 
         // Econde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
