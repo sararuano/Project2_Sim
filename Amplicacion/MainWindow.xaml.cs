@@ -115,6 +115,35 @@ namespace Amplicacion
             }
         }
 
+        //Para ralentizar
+        private void Slow_Button_Click(object sender, RoutedEventArgs e)
+        {
+            clock_time.Interval = clock_time.Interval + TimeSpan.FromMilliseconds(200);
+        }
+
+        //Para acelerar
+        private void Fast_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (clock_time.Interval.TotalMilliseconds > 1000)
+            {
+                clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(500);
+            }
+            else
+            {
+                if(clock_time.Interval.TotalMilliseconds > 400)
+                {
+                    clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(200);
+                }
+                else
+                {
+                    if (clock_time.Interval.TotalMilliseconds > 10)
+                    {
+                        clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(10);
+                    }
+                }
+            }
+        }
+
         // Asigna un valor de temperatura a una celda concreta al presionar el boton
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -451,6 +480,6 @@ namespace Amplicacion
 
         }
 
-        
+       
     }
 }
