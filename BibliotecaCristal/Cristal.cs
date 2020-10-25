@@ -95,6 +95,27 @@ namespace BibliotecaCristal
             }
             return null;
         }
+        public Celda[] GetCol(int col)
+        {
+
+            Celda[] columna = new Celda[cristal.GetLength(0)];
+            int i = 0;
+            while (i < cristal.GetLength(0))
+            {
+                if (i == col)
+                {
+                    int j = 0;
+                    while (j < cristal.GetLength(0))
+                    {
+                        columna[j] = cristal[j, i];
+                        j++;
+                    }
+                    return columna;
+                }
+                i++;
+            }
+            return null;
+        }
         public Celda[,] GetCristal()
         {
             return cristal;
