@@ -17,7 +17,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BibliotecaCristal;
 
-
 namespace Amplicacion
 {
     /// <summary>
@@ -45,11 +44,12 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
-            createTempIndicator(200);
+            createTempIndicator(100);
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
             clock_time.Interval = new TimeSpan(steps);
+            
         }
 
         //BOTONES
@@ -147,8 +147,8 @@ namespace Amplicacion
         // Asigna un valor de temperatura a una celda concreta al presionar el boton
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            int i = Convert.ToInt16(textXS.Text);
-            int j = Convert.ToInt16(textYS.Text);
+
+            
             // Es lo como he conseguido que te converta a doule un string que tiene un menos
             double T = 0;
             string Tstr = (textTS.Text);
@@ -157,49 +157,92 @@ namespace Amplicacion
             double neg = 1;
             foreach (char pos in Tchar)
             {
-
-                if (Tchar[0] == '-' && neg == 1 && count == 0)
+                if (Tstr != "")
                 {
-                    count = count - 1;
-                    neg = -1;
+                    if (Tchar[0] == '-' && neg == 1 && count == 0)
+                    {
+                        count = count - 1;
+                        neg = -1;
+                    }
+                    else { }
+                    if (count == 0)
+                    {
+                        string posstr = pos.ToString();
+                        T = T + Convert.ToDouble(posstr);
+                    }
+                    else if (count == 1 && Tchar[count - 1] == '0')
+                    { }
+                    else if (count > 1)
+                    {
+                        string posstr = pos.ToString();
+                        T = T + Convert.ToDouble(posstr) / (10 ^ (count - 1));
+                    }
+                    else if (Tstr == "0")
+                    {
+                        T = 0;
+                        break;
+                    }
+                    else if (Tstr == "-1")
+                    {
+                        T = -1;
+                        neg = 1;
+                        break;
+                    }
+                    else { }
+                    count++;
                 }
-                else { }
-                if (count == 0)
-                {
-                    string posstr = pos.ToString();
-                    T = T + Convert.ToDouble(posstr);
-                }
-                else if (count == 1 && Tchar[count - 1] == '0')
-                { }
-                else if (count > 1)
-                {
-                    string posstr = pos.ToString();
-                    T = T + Convert.ToDouble(posstr) / (10 ^ (count - 1));
-                }
-                else if (Tstr == "0")
-                {
-                    T = 0;
-                    break;
-                }
-                else if (Tstr == "-1")
-                {
-                    T = -1;
-                    neg = 1;
-                    break;
-                }
-                else { }
-                count++;
-
             }
             T = T * neg;
             // 
             if (T != 0 && T != -1)
                 T = Math.Round(T, count - 2);
             int filas = Rejilla.RowDefinitions.Count - 1;
+            int i;
+            int j;
+            int selected= TempSelection.SelectedIndex;
+            if (selected==0)
+            {
+                i = Convert.ToInt16(textXS.Text);
+                j = Convert.ToInt16(textYS.Text);
+            }
+            else if (selected==1)
+            {
+                i = 0;
+                j = Convert.ToInt16(textYS.Text);
+            }
+            else 
+            {
+                i = Convert.ToInt16(textXS.Text);
+                j = 0;
+            }
+
             if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
             {
-                cris.GetCeldaij(i, j).SetTemperature(T);     //Se tiene que poner la temperatura que toca
-                SetColorTemp(T, i, j);
+                if (selected == 0)
+                {
+                    cris.GetCeldaij(i, j).SetTemperature(T);     //Se tiene que poner la temperatura que toca
+                    SetColorTemp(T, i, j);
+                }
+                else if (selected == 1)
+                {
+                    int fila = 0;
+                    foreach (Celda cell in cris.GetRow(fila))
+                    {
+                        SetColorTemp(cell.GetTemperature(), j, fila);
+                        SetColorTemp(T, j, fila);
+                        fila++;
+                    }
+                }
+                else 
+                {
+                    int columna = 0;
+                    foreach (Celda cell in cris.GetCol(columna))
+                    {
+                        SetColorTemp(cell.GetTemperature(), columna, i);
+                        SetColorTemp(T, columna, j);
+                        columna++;
+                    }
+                }
                 textXS.Text = "";
                 textYS.Text = "";
                 textTS.Text = "";
@@ -212,7 +255,7 @@ namespace Amplicacion
         //**VACÍA** Lo que pasaría si abriesemos la consola
         private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         //**************************************************************************************************
@@ -292,6 +335,11 @@ namespace Amplicacion
             }
             TempPhaseBox.Items.Add("Temperature");
             TempPhaseBox.Items.Add("Phase");
+
+            TempSelection.Items.Add("Select by cells");
+            TempSelection.Items.Add("Select by rows");
+            TempSelection.Items.Add("Select by columns");
+            TempSelection.SelectedItem = "Select by cells";
 
         }
 
@@ -377,7 +425,7 @@ namespace Amplicacion
             Rejilla.Children.Clear();
 
             byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-            Color colorset = Color.FromArgb(100, 255, R, 0);
+            Color colorset = Color.FromArgb(255, 255, R, 0);
             Brush colorBrush = new SolidColorBrush(colorset);
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
@@ -470,7 +518,7 @@ namespace Amplicacion
                 Double filasD = Convert.ToDouble(filas);
                 StackPanel panel = new StackPanel();
                 byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
-                Color colorset = Color.FromArgb(100, 255, R, 0);
+                Color colorset = Color.FromArgb(255, 255, R, 0);
                 panel.Background = new SolidColorBrush(colorset);
                 Grid.SetRow(panel, count);
                 TempIndicator.Children.Add(panel);
@@ -480,6 +528,27 @@ namespace Amplicacion
 
         }
 
-       
+        private void TempSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int sel=TempSelection.SelectedIndex;
+            if (sel ==0)
+            {
+                TaparBox0.Visibility = Visibility.Hidden;
+                TaparBox1.Visibility = Visibility.Hidden;
+                TaparBox2.Visibility = Visibility.Hidden;
+            }
+            else if (sel == 1)
+            {
+                TaparBox0.Visibility = Visibility.Hidden;
+                TaparBox1.Visibility = Visibility.Visible;
+                TaparBox2.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                TaparBox0.Visibility = Visibility.Visible;
+                TaparBox1.Visibility = Visibility.Hidden;
+                TaparBox2.Visibility = Visibility.Hidden;
+            }
+        }
     }
 }
