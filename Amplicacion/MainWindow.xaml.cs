@@ -48,7 +48,7 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(steps);
+            clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
             
         }
 
@@ -144,10 +144,36 @@ namespace Amplicacion
             }
         }
 
-        // Asigna un valor de temperatura a una celda concreta al presionar el boton
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        //Cambia el tamaño de las celdas
+        private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
         {
+            if (textGridSize.Text != "")
+            {
+                int valor = Convert.ToInt16(textGridSize.Text);
+                if (valor % 2 == 1)
+                {
+                    CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                    pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                    paintInitialT();
+                }
+                else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
+                textGridSize.Text = "";
+                
+            }
+        }
 
+        //Solidifica la celda del medio
+        private void Put_Grain_Button_Click(object sender, RoutedEventArgs e)
+        {
+            int dimension = Rejilla.RowDefinitions.Count();
+            int ij = dimension / 2;
+            cris.Solidificar(ij, ij);
+            paintInitialT();
+        }
+
+        // Asigna un valor de temperatura a una celda concreta al presionar el boton
+        private void Set_Temp_Button_Click(object sender, RoutedEventArgs e)
+        {
             
             // Es lo como he conseguido que te converta a doule un string que tiene un menos
             double T = 0;
@@ -284,13 +310,15 @@ namespace Amplicacion
             double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
             double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
             double temperature = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetTemperature();
+            double phase = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetPhase();
 
             textX.Text = Math.Round(((x - widthCasilla / 2) / widthCasilla), 0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
             textTemp.Text = temperature.ToString();
+            textPhase.Text = phase.ToString();
         }
 
-        // Econde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
+        // **INACABADA** Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
         private void TempPhaseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = TempPhaseBox.SelectedIndex;
@@ -501,6 +529,10 @@ namespace Amplicacion
                 foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
                     double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                    if (temp <-1)
+                    {
+                        temp = -1;
+                    }
                     byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     Brush colorBrush = new SolidColorBrush(colorset);
@@ -586,15 +618,5 @@ namespace Amplicacion
         }
 
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (textGridSize.Text != "")
-            {
-                CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
-                pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-                paintInitialT();
-                textGridSize.Text = "";
-            }
-        }
     }
 }
