@@ -162,10 +162,19 @@ namespace Amplicacion
             }
         }
 
-        // Asigna un valor de temperatura a una celda concreta al presionar el boton
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        //Solidifica la celda del medio
+        private void Put_Grain_Button_Click(object sender, RoutedEventArgs e)
         {
+            int dimension = Rejilla.RowDefinitions.Count();
+            int ij = dimension / 2;
+            cris.GetCeldaij(ij, ij).SetTemperature(0);
+            cris.GetCeldaij(ij, ij).SetPhase(0);
+            paintInitialT();
+        }
 
+        // Asigna un valor de temperatura a una celda concreta al presionar el boton
+        private void Set_Temp_Button_Click(object sender, RoutedEventArgs e)
+        {
             
             // Es lo como he conseguido que te converta a doule un string que tiene un menos
             double T = 0;
@@ -302,10 +311,12 @@ namespace Amplicacion
             double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
             double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
             double temperature = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetTemperature();
+            double phase = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetPhase();
 
             textX.Text = Math.Round(((x - widthCasilla / 2) / widthCasilla), 0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
             textTemp.Text = temperature.ToString();
+            textPhase.Text = phase.ToString();
         }
 
         // **INACABADA** Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
@@ -519,6 +530,10 @@ namespace Amplicacion
                 foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
                     double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                    if (temp <-1)
+                    {
+                        temp = -1;
+                    }
                     byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     Brush colorBrush = new SolidColorBrush(colorset);
@@ -604,7 +619,5 @@ namespace Amplicacion
         }
 
 
-
-  
     }
 }
