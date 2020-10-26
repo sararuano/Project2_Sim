@@ -167,8 +167,7 @@ namespace Amplicacion
         {
             int dimension = Rejilla.RowDefinitions.Count();
             int ij = dimension / 2;
-            cris.GetCeldaij(ij, ij).SetTemperature(0);
-            cris.GetCeldaij(ij, ij).SetPhase(0);
+            cris.Solidificar(ij, ij);
             paintInitialT();
         }
 
