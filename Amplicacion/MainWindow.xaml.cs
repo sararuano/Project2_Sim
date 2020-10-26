@@ -149,10 +149,16 @@ namespace Amplicacion
         {
             if (textGridSize.Text != "")
             {
-                CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
-                pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-                paintInitialT();
+                int valor = Convert.ToInt16(textGridSize.Text);
+                if (valor % 2 == 1)
+                {
+                    CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                    pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                    paintInitialT();
+                }
+                else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
                 textGridSize.Text = "";
+                
             }
         }
 
