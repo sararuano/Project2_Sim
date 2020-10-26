@@ -48,7 +48,7 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(steps);
+            clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
             
         }
 
@@ -144,10 +144,36 @@ namespace Amplicacion
             }
         }
 
-        // Asigna un valor de temperatura a una celda concreta al presionar el boton
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        //Cambia el tamaño de las celdas
+        private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
         {
+            if (textGridSize.Text != "")
+            {
+                int valor = Convert.ToInt16(textGridSize.Text);
+                if (valor % 2 == 1)
+                {
+                    CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                    pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                    paintInitialT();
+                }
+                else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
+                textGridSize.Text = "";
+                
+            }
+        }
 
+        //Solidifica la celda del medio
+        private void Put_Grain_Button_Click(object sender, RoutedEventArgs e)
+        {
+            int dimension = Rejilla.RowDefinitions.Count();
+            int ij = dimension / 2;
+            cris.Solidificar(ij, ij);
+            paintInitialT();
+        }
+
+        // Asigna un valor de temperatura a una celda concreta al presionar el boton
+        private void Set_Temp_Button_Click(object sender, RoutedEventArgs e)
+        {
             
             // Es lo como he conseguido que te converta a doule un string que tiene un menos
             double T = 0;
@@ -228,7 +254,6 @@ namespace Amplicacion
                     int fila = 0;
                     foreach (Celda cell in cris.GetRow(fila))
                     {
-                        SetColorTemp(cell.GetTemperature(), j, fila);
                         SetColorTemp(T, j, fila);
                         fila++;
                     }
@@ -285,13 +310,15 @@ namespace Amplicacion
             double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
             double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
             double temperature = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetTemperature();
+            double phase = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetPhase();
 
             textX.Text = Math.Round(((x - widthCasilla / 2) / widthCasilla), 0).ToString();
             textY.Text = Math.Round(((y - widthCasilla / 2) / widthCasilla), 0).ToString();
             textTemp.Text = temperature.ToString();
+            textPhase.Text = phase.ToString();
         }
 
-        // Econde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
+        // **INACABADA** Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
         private void TempPhaseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = TempPhaseBox.SelectedIndex;
@@ -361,6 +388,9 @@ namespace Amplicacion
 
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
+            Rej.Children.Clear();
+            Rej.ColumnDefinitions.Clear();
+            Rej.RowDefinitions.Clear();
             //Define the grid
             int count = 0;
             while (count < filas)
@@ -374,7 +404,6 @@ namespace Amplicacion
                 Rej.RowDefinitions.Add(new RowDefinition());
                 count2++;
             }
-
             cris = new Cristal(filas);
             return Rej;
 
@@ -482,23 +511,60 @@ namespace Amplicacion
                 iirow++;
             }
 
-            cris.GetCeldaij(14 - fila, columna).SetTemperature(temp);
+            cris.GetCeldaij(filas-1 - fila, columna).SetTemperature(temp);
         }
 
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura a las celdas 
         private void paintInitialT()
         {
-            int i = 0;
-            while (i < Rejilla.RowDefinitions.Count())
+            int filas = Rejilla.RowDefinitions.Count();
+            
+            Rejilla.Children.Clear();
+
+            
+            int irow = 0;
+            foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
-                Celda[] fila = cris.GetRow(i);
-                int j = 0;
-                foreach (Celda cell in fila)
+                int icol = 0;
+                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
-                    SetColorTemp(cell.GetTemperature(), i, j);
-                    j++;
+                    double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                    if (temp <-1)
+                    {
+                        temp = -1;
+                    }
+                    byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+                    Color colorset = Color.FromArgb(255, 255, R, 0);
+                    Brush colorBrush = new SolidColorBrush(colorset);
+
+                    StackPanel panel = new StackPanel();
+                    panel.Background = colorBrush;
+                    pan[irow, icol] = panel;
+                    Grid.SetRow(panel, filas-1-irow);
+                    Grid.SetColumn(panel, icol);
+                    Rejilla.Children.Add(panel);
+                    icol++;
                 }
-                i++;
+                irow++;
+            }
+
+            // Pendiente de quitar si se pudiese
+            int iirow = 0;
+            foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
+            {
+                int iicol = 0;
+                foreach (ColumnDefinition col in HuecoRejilla.ColumnDefinitions)
+                {
+                    if (0 == iicol && 0 == iirow)
+                    {
+                        HuecoRejilla.Children.Clear();
+                        Grid.SetRow(Rejilla, iirow);
+                        Grid.SetColumn(Rejilla, iicol);
+                        HuecoRejilla.Children.Add(Rejilla);
+                    }
+                    iicol++;
+                }
+                iirow++;
             }
         }
 
@@ -550,5 +616,7 @@ namespace Amplicacion
                 TaparBox2.Visibility = Visibility.Hidden;
             }
         }
+
+
     }
 }
