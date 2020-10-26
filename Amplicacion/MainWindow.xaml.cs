@@ -228,7 +228,6 @@ namespace Amplicacion
                     int fila = 0;
                     foreach (Celda cell in cris.GetRow(fila))
                     {
-                        SetColorTemp(cell.GetTemperature(), j, fila);
                         SetColorTemp(T, j, fila);
                         fila++;
                     }
@@ -361,6 +360,9 @@ namespace Amplicacion
 
         private Grid CreateDataGridyCristal(Grid Rej, int filas)
         {
+            Rej.Children.Clear();
+            Rej.ColumnDefinitions.Clear();
+            Rej.RowDefinitions.Clear();
             //Define the grid
             int count = 0;
             while (count < filas)
@@ -374,7 +376,6 @@ namespace Amplicacion
                 Rej.RowDefinitions.Add(new RowDefinition());
                 count2++;
             }
-
             cris = new Cristal(filas);
             return Rej;
 
@@ -482,23 +483,56 @@ namespace Amplicacion
                 iirow++;
             }
 
-            cris.GetCeldaij(14 - fila, columna).SetTemperature(temp);
+            cris.GetCeldaij(filas-1 - fila, columna).SetTemperature(temp);
         }
 
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura a las celdas 
         private void paintInitialT()
         {
-            int i = 0;
-            while (i < Rejilla.RowDefinitions.Count())
+            int filas = Rejilla.RowDefinitions.Count();
+            
+            Rejilla.Children.Clear();
+
+            
+            int irow = 0;
+            foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
-                Celda[] fila = cris.GetRow(i);
-                int j = 0;
-                foreach (Celda cell in fila)
+                int icol = 0;
+                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
-                    SetColorTemp(cell.GetTemperature(), i, j);
-                    j++;
+                    double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                    byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+                    Color colorset = Color.FromArgb(255, 255, R, 0);
+                    Brush colorBrush = new SolidColorBrush(colorset);
+
+                    StackPanel panel = new StackPanel();
+                    panel.Background = colorBrush;
+                    pan[irow, icol] = panel;
+                    Grid.SetRow(panel, filas-1-irow);
+                    Grid.SetColumn(panel, icol);
+                    Rejilla.Children.Add(panel);
+                    icol++;
                 }
-                i++;
+                irow++;
+            }
+
+            // Pendiente de quitar si se pudiese
+            int iirow = 0;
+            foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
+            {
+                int iicol = 0;
+                foreach (ColumnDefinition col in HuecoRejilla.ColumnDefinitions)
+                {
+                    if (0 == iicol && 0 == iirow)
+                    {
+                        HuecoRejilla.Children.Clear();
+                        Grid.SetRow(Rejilla, iirow);
+                        Grid.SetColumn(Rejilla, iicol);
+                        HuecoRejilla.Children.Add(Rejilla);
+                    }
+                    iicol++;
+                }
+                iirow++;
             }
         }
 
@@ -548,6 +582,18 @@ namespace Amplicacion
                 TaparBox0.Visibility = Visibility.Visible;
                 TaparBox1.Visibility = Visibility.Hidden;
                 TaparBox2.Visibility = Visibility.Hidden;
+            }
+        }
+
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (textGridSize.Text != "")
+            {
+                CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                paintInitialT();
+                textGridSize.Text = "";
             }
         }
     }
