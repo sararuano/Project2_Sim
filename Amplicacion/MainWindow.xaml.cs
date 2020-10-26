@@ -48,7 +48,7 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(steps);
+            clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
             
         }
 
@@ -141,6 +141,18 @@ namespace Amplicacion
                         clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(10);
                     }
                 }
+            }
+        }
+
+        //Cambia el tamaño de las celdas
+        private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
+        {
+            if (textGridSize.Text != "")
+            {
+                CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                paintInitialT();
+                textGridSize.Text = "";
             }
         }
 
@@ -290,7 +302,7 @@ namespace Amplicacion
             textTemp.Text = temperature.ToString();
         }
 
-        // Econde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
+        // **INACABADA** Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
         private void TempPhaseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = TempPhaseBox.SelectedIndex;
@@ -586,15 +598,7 @@ namespace Amplicacion
         }
 
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (textGridSize.Text != "")
-            {
-                CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
-                pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-                paintInitialT();
-                textGridSize.Text = "";
-            }
-        }
+
+  
     }
 }
