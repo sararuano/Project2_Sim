@@ -31,6 +31,7 @@ namespace Amplicacion
         DispatcherTimer clock_time;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
+        bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
         StackPanel[,] pan;
 
 
@@ -48,6 +49,7 @@ namespace Amplicacion
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             ListBoxCC.Items.Add("Constant Temperature");
             ListBoxCC.Items.Add("Reflective Boundary");
+            CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
 
             paintInitialT();
             createTempIndicator(100);
@@ -332,7 +334,16 @@ namespace Amplicacion
 
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
+            string selectedCC = ListBoxCC.SelectedItem.ToString();
+            if(selectedCC == "Constant Temperature")
+            {
+                CC_temp_constant = true;
+            }
+            else if(selectedCC== "Reflective Boundary")
+            {
+                CC_temp_constant = false;
+            }
+           
         }
 
         private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
