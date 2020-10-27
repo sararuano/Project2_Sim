@@ -189,108 +189,23 @@ namespace Amplicacion
         }
 
         // Asigna un valor de temperatura a una celda concreta al presionar el boton
-        private void Set_Temp_Button_Click(object sender, RoutedEventArgs e)
+        private void Solidify_Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            // Es lo como he conseguido que te converta a doule un string que tiene un menos
-            double T = 0;
-            string acomulador = "";
-            string Tstr = (textTS.Text);
-            char[] Tchar = Tstr.ToCharArray();
-            int count = 0;
-            double neg = 1;
-            foreach (char pos in Tchar)
-            {
-                if (Tstr != "")
-                {
-                    if (Tchar[0] == '-' && neg == 1 && count == 0)
-                    {
-                        count = count - 1;
-                        neg = -1;
-                    }
-                    else { }
-                    if (count == 0)
-                    {
-                        string posstr = pos.ToString();
-                        T = T + Convert.ToDouble(posstr);
-                    }
-                    else if (count == 1 && Tchar[count - 1] == '0')
-                    { }
-                    else if (count > 1)
-                    {
-                        string posstr = pos.ToString();
-                        T = T + Convert.ToDouble(posstr) / (10 ^ (count - 1));
-                    }
-                    else if (Tstr == "0")
-                    {
-                        T = 0;
-                        break;
-                    }
-                    else if (Tstr == "-1")
-                    {
-                        T = -1;
-                        neg = 1;
-                        break;
-                    }
-                    else { }
-                    count++;
-                }
-            }
-            T = T * neg;
-            // 
-            if (T != 0 && T != -1)
-                T = Math.Round(T, count - 2);
             int filas = Rejilla.RowDefinitions.Count - 1;
             int i;
             int j;
-            int selected= TempSelection.SelectedIndex;
-            if (selected==0)
+            i = Convert.ToInt16(textXS.Text);
+            j = Convert.ToInt16(textYS.Text);
+            
+            if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
             {
-                i = Convert.ToInt16(textXS.Text);
-                j = Convert.ToInt16(textYS.Text);
-            }
-            else if (selected==1)
-            {
-                i = 0;
-                j = Convert.ToInt16(textYS.Text);
-            }
-            else 
-            {
-                i = Convert.ToInt16(textXS.Text);
-                j = 0;
-            }
-
-            if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
-            {
-                if (selected == 0)
-                {
-                    cris.GetCeldaij(i, j).SetTemperature(T);     //Se tiene que poner la temperatura que toca
-                    SetColorTemp(T, i, j);
-                    acomulador = (Convert.ToString(j) + ' ' + Convert.ToString(i) + ' ' + Convert.ToString(T) + "\r\n");
-                    text_save.Text = acomulador + text_save.Text;
-                }
-                else if (selected == 1)
-                {
-                    int fila = 0;
-                    foreach (Celda cell in cris.GetRow(fila))
-                    {
-                        SetColorTemp(T, j, fila);
-                        fila++;
-                    }
-                }
-                else 
-                {
-                    int columna = 0;
-                    foreach (Celda cell in cris.GetCol(columna))
-                    {
-                        SetColorTemp(cell.GetTemperature(), columna, i);
-                        SetColorTemp(T, columna, j);
-                        columna++;
-                    }
-                }
+                
+                cris.GetCeldaij(i, j).SetTemperature(0);
+                cris.GetCeldaij(i, j).SetPhase(0);
+                SetColorTemp(0, i, j);
+                
                 textXS.Text = "";
                 textYS.Text = "";
-                textTS.Text = "";
             }
             else
                 MessageBox.Show("Limit values are RowIndex: [0," + filas.ToString() + "], ColumnIndex: [0," + filas.ToString() + "] and T: [-1,0]. Check them!");
@@ -499,10 +414,6 @@ namespace Amplicacion
             TempPhaseBox.Items.Add("Temperature");
             TempPhaseBox.Items.Add("Phase");
 
-            TempSelection.Items.Add("Select by cells");
-            TempSelection.Items.Add("Select by rows");
-            TempSelection.Items.Add("Select by columns");
-            TempSelection.SelectedItem = "Select by cells";
 
         }
 
@@ -730,27 +641,6 @@ namespace Amplicacion
 
         }
 
-        private void TempSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            int sel=TempSelection.SelectedIndex;
-            if (sel ==0)
-            {
-                TaparBox0.Visibility = Visibility.Hidden;
-                TaparBox1.Visibility = Visibility.Hidden;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
-            else if (sel == 1)
-            {
-                TaparBox0.Visibility = Visibility.Hidden;
-                TaparBox1.Visibility = Visibility.Visible;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                TaparBox0.Visibility = Visibility.Visible;
-                TaparBox1.Visibility = Visibility.Hidden;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
-        }
+
     }
 }
