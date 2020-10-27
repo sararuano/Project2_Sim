@@ -208,7 +208,7 @@ namespace Amplicacion
                 
                 cris.GetCeldaij(i, j).SetTemperature(0);
                 cris.GetCeldaij(i, j).SetPhase(0);
-                SetColorTemp(0, i, j);
+                paintInitialT();
                 
                 textXS.Text = "";
                 textYS.Text = "";
@@ -218,11 +218,6 @@ namespace Amplicacion
 
         }
 
-        //**VACÍA** Lo que pasaría si abriesemos la consola
-        private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -333,13 +328,14 @@ namespace Amplicacion
             int index = TempPhaseBox.SelectedIndex;
             if (index == 0)
             {
-
-
+                show_grid = "temperatura";
+                paintInitialT();
 
             }
             else if (index == 1)
             {
-
+                show_grid = "fase";
+                paintInitialT();
 
             }
             else { }
@@ -447,7 +443,7 @@ namespace Amplicacion
 
         //*********************************************************************************************************
 
-        //FUNCIONES DE LA TEMPERATURA
+        //FUNCIONES DE LA TEMPERATURA//FASE
 
         // Creara un nuevo grid, en el que conservará los valores anteriores de la rejilla 
         //que estan guardados en la matriz de stackpaneal llamada pan y para la fila y columna 
@@ -519,7 +515,7 @@ namespace Amplicacion
             cris.GetCeldaij(filas-1 - fila, columna).SetTemperature(temp);
         }
 
-        //Barre todos los valores de la matriz cristal y pone el color de la temperatura a las celdas 
+        //Barre todos los valores de la matriz cristal y pone el color de la temperatura/fase a las celdas 
         private void paintInitialT()
         {
             int filas = Rejilla.RowDefinitions.Count();
@@ -533,21 +529,42 @@ namespace Amplicacion
                 int icol = 0;
                 foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
-                    double temp = cris.GetCeldaij(irow, icol).GetTemperature();
-                    if (temp <-1)
+                    if (show_grid == "temperatura")
                     {
-                        temp = -1;
-                    }
-                    byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-                    Color colorset = Color.FromArgb(255, 255, R, 0);
-                    Brush colorBrush = new SolidColorBrush(colorset);
+                        double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                        if (temp < -1)
+                        {
+                            temp = -1;
+                        }
+                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+                        Color colorset = Color.FromArgb(255, 255, R, 0);
+                        Brush colorBrush = new SolidColorBrush(colorset);
 
-                    StackPanel panel = new StackPanel();
-                    panel.Background = colorBrush;
-                    pan[irow, icol] = panel;
-                    Grid.SetRow(panel, filas-1-irow);
-                    Grid.SetColumn(panel, icol);
-                    Rejilla.Children.Add(panel);
+                        StackPanel panel = new StackPanel();
+                        panel.Background = colorBrush;
+                        pan[irow, icol] = panel;
+                        Grid.SetRow(panel, filas - 1 - irow);
+                        Grid.SetColumn(panel, icol);
+                        Rejilla.Children.Add(panel);
+                    }
+                    else if (show_grid == "fase")
+                    {
+                        double phase = cris.GetCeldaij(irow, icol).GetPhase();
+                        //if (phase > 1
+                        //{
+                        //    phase = 1;
+                        //}
+                        byte R = Convert.ToByte(Math.Round(255-phase * 255, 0));
+                        Color colorset = Color.FromArgb(R, 0, 0, 255);
+                        Brush colorBrush = new SolidColorBrush(colorset);
+
+                        StackPanel panel = new StackPanel();
+                        panel.Background = colorBrush;
+                        pan[irow, icol] = panel;
+                        Grid.SetRow(panel, filas - 1 - irow);
+                        Grid.SetColumn(panel, icol);
+                        Rejilla.Children.Add(panel);
+                    }
                     icol++;
                 }
                 irow++;
