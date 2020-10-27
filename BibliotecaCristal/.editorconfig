@@ -1,0 +1,13 @@
+﻿[*.{cs,vb}]
+
+# IDE0048: Agregar paréntesis para claridad
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+
+# IDE0048: Agregar paréntesis para claridad
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:suggestion
+
+# IDE0048: Agregar paréntesis para claridad
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:suggestion
+
+# IDE0048: Agregar paréntesis para claridad
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:suggestion

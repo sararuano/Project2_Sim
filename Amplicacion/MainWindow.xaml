@@ -65,7 +65,7 @@
 
         </StackPanel>
         <StackPanel x:Name="PanelCol2" Grid.Column="1">
-            <ComboBox x:Name="TempPhaseBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="22" Margin="25,20,0,0" SelectionChanged="TempPhaseBox_SelectionChanged"/>
+            <ComboBox x:Name="TempPhaseBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="22" Margin="25,20,0,0" SelectionChanged="TempPhaseBox_SelectionChanged" SelectedIndex="0"/>
             <Grid x:Name="HuecoRejilla" HorizontalAlignment="Left" VerticalAlignment="Top" Width ="200" Height="200" Margin="25,0,0,0" MouseLeftButtonDown="Rejilla_MouseLeftButtonDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" Visibility="Visible">
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition />

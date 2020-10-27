@@ -208,7 +208,7 @@ namespace Amplicacion
                 
                 cris.GetCeldaij(i, j).SetTemperature(0);
                 cris.GetCeldaij(i, j).SetPhase(0);
-                SetColorTemp(0, i, j);
+                paintInitialT();
                 
                 textXS.Text = "";
                 textYS.Text = "";
@@ -218,15 +218,9 @@ namespace Amplicacion
 
         }
 
-        //**VACÍA** Lo que pasaría si abriesemos la consola
-        private void OpenConsoleButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
-            Celda una_cela = new Celda();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "";
             saveFileDialog.Title = "Save text Files";
@@ -234,16 +228,11 @@ namespace Amplicacion
             saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
-                
-            //StreamWriter un_archivo = new StreamWriter("Documento");
-
-            double posx = Convert.ToInt32(una_cela.GetX()); //fila
-            double posy = Convert.ToInt32(una_cela.GetY()); //columna
-            double Temp = una_cela.GetTemperature();
 
             if (saveFileDialog.ShowDialog() == true)
             {
                 text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                text_save.Text += (Convert.ToString(steps) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
                     text_save.Text += (para.GetName() + "\r\n");
@@ -255,83 +244,27 @@ namespace Amplicacion
                     text_save.Text += (para.GetDeltaTime() + "\r\n");
                 }
 
-                //int iiirow = 0;
-                //foreach (Celda cel in cris.GetRow(iiirow))
-                //{
-                //    posy = cel.GetX();
-                //    //posy = Convert.ToInt32(cris.GetCeldaij(iiirow, 0).GetX());
-                //    text_save.Text += Convert.ToString(posy + "\r\n");
-                //    iiirow++;
-                //}
-                //int iiicol = 0;
-                //foreach (Celda cel in cris.GetCol(iiicol))
-                //{
-                //    posx = cel.GetY(); ;
-                //    text_save.Text += Convert.ToString(posx + "\r\n");
-                //    iiicol++;
-                //}
                 int iiirow = 0;
+                double p = 0;
                 foreach (RowDefinition row in Rejilla.RowDefinitions)
                 {
                     int iiicol = 0;
                     foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                     {
-                        text_save.Text += Convert.ToString(cris.GetRow(iiicol));
+                        double otrax = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetY());
+                        double otray = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetX());
+                        double temper = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetTemperature());
+                        double phase = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetPhase());
+
+                        text_save.Text += (Convert.ToString(otrax) + ' ' + Convert.ToString(otray) +' ' + Convert.ToString(temper) + ' ' + Convert.ToString(phase) + "\r\n");
+
                         iiicol++;
+                        p++;
                     }
                     iiirow++;
                 }
-                    //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
-                    //{
-                    //    int selected = TempSelection.SelectedIndex;
-                    //    if (selected == 0)
-                    //    {
-                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
-                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
-
-                    //    }
-                    //    else if (selected == 1)
-                    //    {
-                    //        posx = 0;
-                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
-                    //    }
-                    //    else
-                    //    {
-                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
-                    //        posy = 0;
-                    //        i = i + 1;
-                    //        j = j + 1;
-                    //    }
-                    //    text_save.Text += (posx, posy, T);
-                    //}
-
-
-                    File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
-                //{
-                //    T = Convert.ToInt32(cris.GetCelda(i, j).GetTemperature());
-                //    if (T != 0 && T != -1)
-                //    {
-                //        un_archivo.Write(Convert.ToString(T));
-                //    }
-                //    else
-                //    {
-                //        j = j + 1;
-                //        i = i + 1;
-                //    }
-                //}
-                //foreach (RowDefinition row in Rejilla.RowDefinitions)
-                //{
-                //    foreach(ColumnDefinition col in Rejilla.ColumnDefinitions)
-                //    {
-                //        double temp = cris.GetCelda(Convert.ToDouble(row), Convert.ToDouble(col)).GetTemperature();
-
-                //    }
-                //}
-                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
-
-                //File.WriteAllText(saveFileDialog.FileName, "hola");
             }
+            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
         }
 
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -395,13 +328,14 @@ namespace Amplicacion
             int index = TempPhaseBox.SelectedIndex;
             if (index == 0)
             {
-
-
+                show_grid = "temperatura";
+                paintInitialT();
 
             }
             else if (index == 1)
             {
-
+                show_grid = "fase";
+                paintInitialT();
 
             }
             else { }
@@ -509,7 +443,7 @@ namespace Amplicacion
 
         //*********************************************************************************************************
 
-        //FUNCIONES DE LA TEMPERATURA
+        //FUNCIONES DE LA TEMPERATURA//FASE
 
         // Creara un nuevo grid, en el que conservará los valores anteriores de la rejilla 
         //que estan guardados en la matriz de stackpaneal llamada pan y para la fila y columna 
@@ -581,7 +515,7 @@ namespace Amplicacion
             cris.GetCeldaij(filas-1 - fila, columna).SetTemperature(temp);
         }
 
-        //Barre todos los valores de la matriz cristal y pone el color de la temperatura a las celdas 
+        //Barre todos los valores de la matriz cristal y pone el color de la temperatura/fase a las celdas 
         private void paintInitialT()
         {
             int filas = Rejilla.RowDefinitions.Count();
@@ -595,21 +529,42 @@ namespace Amplicacion
                 int icol = 0;
                 foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                 {
-                    double temp = cris.GetCeldaij(irow, icol).GetTemperature();
-                    if (temp <-1)
+                    if (show_grid == "temperatura")
                     {
-                        temp = -1;
-                    }
-                    byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-                    Color colorset = Color.FromArgb(255, 255, R, 0);
-                    Brush colorBrush = new SolidColorBrush(colorset);
+                        double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                        if (temp < -1)
+                        {
+                            temp = -1;
+                        }
+                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+                        Color colorset = Color.FromArgb(255, 255, R, 0);
+                        Brush colorBrush = new SolidColorBrush(colorset);
 
-                    StackPanel panel = new StackPanel();
-                    panel.Background = colorBrush;
-                    pan[irow, icol] = panel;
-                    Grid.SetRow(panel, filas-1-irow);
-                    Grid.SetColumn(panel, icol);
-                    Rejilla.Children.Add(panel);
+                        StackPanel panel = new StackPanel();
+                        panel.Background = colorBrush;
+                        pan[irow, icol] = panel;
+                        Grid.SetRow(panel, filas - 1 - irow);
+                        Grid.SetColumn(panel, icol);
+                        Rejilla.Children.Add(panel);
+                    }
+                    else if (show_grid == "fase")
+                    {
+                        double phase = cris.GetCeldaij(irow, icol).GetPhase();
+                        //if (phase > 1
+                        //{
+                        //    phase = 1;
+                        //}
+                        byte R = Convert.ToByte(Math.Round(255-phase * 255, 0));
+                        Color colorset = Color.FromArgb(R, 0, 0, 255);
+                        Brush colorBrush = new SolidColorBrush(colorset);
+
+                        StackPanel panel = new StackPanel();
+                        panel.Background = colorBrush;
+                        pan[irow, icol] = panel;
+                        Grid.SetRow(panel, filas - 1 - irow);
+                        Grid.SetColumn(panel, icol);
+                        Rejilla.Children.Add(panel);
+                    }
                     icol++;
                 }
                 irow++;
