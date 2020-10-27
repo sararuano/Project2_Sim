@@ -46,7 +46,9 @@ namespace Amplicacion
             fillNewListParametros(true, new List<Parametros>());
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-            
+            ListBoxCC.Items.Add("Constant Temperature");
+            ListBoxCC.Items.Add("Reflective Boundary");
+
             paintInitialT();
             createTempIndicator(100);
 
@@ -326,6 +328,11 @@ namespace Amplicacion
 
                 //File.WriteAllText(saveFileDialog.FileName, "hola");
             }
+        }
+
+        private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
         }
 
         private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
