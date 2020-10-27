@@ -550,7 +550,7 @@ namespace Amplicacion
                     else if (show_grid == "fase")
                     {
                         double phase = cris.GetCeldaij(irow, icol).GetPhase();
-                        //if (phase > 1)
+                        //if (phase > 1
                         //{
                         //    phase = 1;
                         //}
