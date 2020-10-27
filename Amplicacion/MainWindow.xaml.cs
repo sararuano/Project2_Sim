@@ -32,6 +32,7 @@ namespace Amplicacion
         List<Parametros> listaParametros;
         Parametros selectedParametros;
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
+        string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
 
 
@@ -50,6 +51,7 @@ namespace Amplicacion
             ListBoxCC.Items.Add("Constant Temperature");
             ListBoxCC.Items.Add("Reflective Boundary");
             CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
+            show_grid = "temperatura";
 
             paintInitialT();
             createTempIndicator(100);
