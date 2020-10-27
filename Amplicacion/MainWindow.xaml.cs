@@ -265,6 +265,60 @@ namespace Amplicacion
                 }
             }
             File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+            MessageBox.Show("S'ha guardat tot correctament");
+        }
+
+        private void Load_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            //openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+            string line;
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var fileStream = openFileDialog.OpenFile();
+                StreamReader reader = new StreamReader(fileStream);
+                int contador = 0;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] trozos = line.Split(' ');
+                    if (contador==0)
+                    {
+                        //fillNewListParametros(true, new List<Parametros>());
+                        pan = new StackPanel[Convert.ToInt32(trozos[0]), Convert.ToInt32(trozos[0])];
+                        CreateDataGridyCristal(Rejilla, Convert.ToInt32(trozos[0]));
+                        paintInitialT();
+                    }
+                    if (contador==1)
+                    {
+                        steps = Convert.ToInt32(trozos[0]);
+                        step_box.Content = Convert.ToString(steps);
+                    }
+                    contador++;
+                }
+            }
+            ////definim el primer dia
+            //steps = 1;
+            //step_box.Content = Convert.ToString(steps);
+
+            ////rejilla
+            //fillNewListParametros(true, new List<Parametros>());
+            //CreateDataGridyCristal(Rejilla, 15);
+            //pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+            //ListBoxCC.Items.Add("Constant Temperature");
+            //ListBoxCC.Items.Add("Reflective Boundary");
+            //CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
+            //show_grid = "temperatura";
+
+            //paintInitialT();
+            //createTempIndicator(100);
+
+            //clock_time = new DispatcherTimer();
+            //clock_time.Tick += new EventHandler(clock_time_Tick);
+            //clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
         }
 
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -615,7 +669,5 @@ namespace Amplicacion
             }
 
         }
-
-
     }
 }
