@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BibliotecaCristal;
+using System.IO;
+using Microsoft.Win32;
 
 namespace Amplicacion
 {
@@ -29,7 +31,10 @@ namespace Amplicacion
         DispatcherTimer clock_time;
         List<Parametros> listaParametros;
         Parametros selectedParametros;
+        bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
+        string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
+
 
         public MainWindow()
         {
@@ -43,6 +48,11 @@ namespace Amplicacion
             fillNewListParametros(true, new List<Parametros>());
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+            ListBoxCC.Items.Add("Constant Temperature");
+            ListBoxCC.Items.Add("Reflective Boundary");
+            CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
+            show_grid = "temperatura";
+
             paintInitialT();
             createTempIndicator(100);
 
@@ -95,7 +105,7 @@ namespace Amplicacion
             double m = selectedParametros.Getm();
             double alpha = selectedParametros.GetAlpha();
             double delta = selectedParametros.GetDelta();
-            cris.NextDay(eps, m, alpha, delta);
+            cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
 
         }
@@ -143,6 +153,19 @@ namespace Amplicacion
                 }
             }
         }
+        //Per tornar a començar
+        private void Restart_Button_Click(object sender, RoutedEventArgs e)
+        {
+            //Tornem a començar el load
+            steps = 1;
+            step_box.Content = Convert.ToString(steps);
+
+            //rejilla
+            fillNewListParametros(true, new List<Parametros>());
+            CreateDataGridyCristal(Rejilla, 15);
+            pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+            paintInitialT();
+        }
 
         //Cambia el tamaño de las celdas
         private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
@@ -172,105 +195,23 @@ namespace Amplicacion
         }
 
         // Asigna un valor de temperatura a una celda concreta al presionar el boton
-        private void Set_Temp_Button_Click(object sender, RoutedEventArgs e)
+        private void Solidify_Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            // Es lo como he conseguido que te converta a doule un string que tiene un menos
-            double T = 0;
-            string Tstr = (textTS.Text);
-            char[] Tchar = Tstr.ToCharArray();
-            int count = 0;
-            double neg = 1;
-            foreach (char pos in Tchar)
-            {
-                if (Tstr != "")
-                {
-                    if (Tchar[0] == '-' && neg == 1 && count == 0)
-                    {
-                        count = count - 1;
-                        neg = -1;
-                    }
-                    else { }
-                    if (count == 0)
-                    {
-                        string posstr = pos.ToString();
-                        T = T + Convert.ToDouble(posstr);
-                    }
-                    else if (count == 1 && Tchar[count - 1] == '0')
-                    { }
-                    else if (count > 1)
-                    {
-                        string posstr = pos.ToString();
-                        T = T + Convert.ToDouble(posstr) / (10 ^ (count - 1));
-                    }
-                    else if (Tstr == "0")
-                    {
-                        T = 0;
-                        break;
-                    }
-                    else if (Tstr == "-1")
-                    {
-                        T = -1;
-                        neg = 1;
-                        break;
-                    }
-                    else { }
-                    count++;
-                }
-            }
-            T = T * neg;
-            // 
-            if (T != 0 && T != -1)
-                T = Math.Round(T, count - 2);
             int filas = Rejilla.RowDefinitions.Count - 1;
             int i;
             int j;
-            int selected= TempSelection.SelectedIndex;
-            if (selected==0)
+            i = Convert.ToInt16(textXS.Text);
+            j = Convert.ToInt16(textYS.Text);
+            
+            if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
             {
-                i = Convert.ToInt16(textXS.Text);
-                j = Convert.ToInt16(textYS.Text);
-            }
-            else if (selected==1)
-            {
-                i = 0;
-                j = Convert.ToInt16(textYS.Text);
-            }
-            else 
-            {
-                i = Convert.ToInt16(textXS.Text);
-                j = 0;
-            }
-
-            if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
-            {
-                if (selected == 0)
-                {
-                    cris.GetCeldaij(i, j).SetTemperature(T);     //Se tiene que poner la temperatura que toca
-                    SetColorTemp(T, i, j);
-                }
-                else if (selected == 1)
-                {
-                    int fila = 0;
-                    foreach (Celda cell in cris.GetRow(fila))
-                    {
-                        SetColorTemp(T, j, fila);
-                        fila++;
-                    }
-                }
-                else 
-                {
-                    int columna = 0;
-                    foreach (Celda cell in cris.GetCol(columna))
-                    {
-                        SetColorTemp(cell.GetTemperature(), columna, i);
-                        SetColorTemp(T, columna, j);
-                        columna++;
-                    }
-                }
+                
+                cris.GetCeldaij(i, j).SetTemperature(0);
+                cris.GetCeldaij(i, j).SetPhase(0);
+                SetColorTemp(0, i, j);
+                
                 textXS.Text = "";
                 textYS.Text = "";
-                textTS.Text = "";
             }
             else
                 MessageBox.Show("Limit values are RowIndex: [0," + filas.ToString() + "], ColumnIndex: [0," + filas.ToString() + "] and T: [-1,0]. Check them!");
@@ -282,6 +223,136 @@ namespace Amplicacion
         {
             
         }
+
+        private void Save_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Celda una_cela = new Celda();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.FileName = "";
+            saveFileDialog.Title = "Save text Files";
+            saveFileDialog.DefaultExt = "txt";
+            saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog.FilterIndex = 2;
+            saveFileDialog.RestoreDirectory = true;
+                
+            //StreamWriter un_archivo = new StreamWriter("Documento");
+
+            double posx = Convert.ToInt32(una_cela.GetX()); //fila
+            double posy = Convert.ToInt32(una_cela.GetY()); //columna
+            double Temp = una_cela.GetTemperature();
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                foreach (Parametros para in listaParametros)
+                {
+                    text_save.Text += (para.GetName() + "\r\n");
+                    text_save.Text += (para.GetEpsilon() + "\r\n");
+                    text_save.Text += (para.Getm() + "\r\n");
+                    text_save.Text += (para.GetDelta() + "\r\n");
+                    text_save.Text += (para.GetAlpha() + "\r\n");
+                    text_save.Text += (para.GetDeltaSpace() + "\r\n");
+                    text_save.Text += (para.GetDeltaTime() + "\r\n");
+                }
+
+                //int iiirow = 0;
+                //foreach (Celda cel in cris.GetRow(iiirow))
+                //{
+                //    posy = cel.GetX();
+                //    //posy = Convert.ToInt32(cris.GetCeldaij(iiirow, 0).GetX());
+                //    text_save.Text += Convert.ToString(posy + "\r\n");
+                //    iiirow++;
+                //}
+                //int iiicol = 0;
+                //foreach (Celda cel in cris.GetCol(iiicol))
+                //{
+                //    posx = cel.GetY(); ;
+                //    text_save.Text += Convert.ToString(posx + "\r\n");
+                //    iiicol++;
+                //}
+                int iiirow = 0;
+                foreach (RowDefinition row in Rejilla.RowDefinitions)
+                {
+                    int iiicol = 0;
+                    foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
+                    {
+                        text_save.Text += Convert.ToString(cris.GetRow(iiicol));
+                        iiicol++;
+                    }
+                    iiirow++;
+                }
+                    //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
+                    //{
+                    //    int selected = TempSelection.SelectedIndex;
+                    //    if (selected == 0)
+                    //    {
+                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
+                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
+
+                    //    }
+                    //    else if (selected == 1)
+                    //    {
+                    //        posx = 0;
+                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
+                    //    }
+                    //    else
+                    //    {
+                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
+                    //        posy = 0;
+                    //        i = i + 1;
+                    //        j = j + 1;
+                    //    }
+                    //    text_save.Text += (posx, posy, T);
+                    //}
+
+
+                    File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
+                //{
+                //    T = Convert.ToInt32(cris.GetCelda(i, j).GetTemperature());
+                //    if (T != 0 && T != -1)
+                //    {
+                //        un_archivo.Write(Convert.ToString(T));
+                //    }
+                //    else
+                //    {
+                //        j = j + 1;
+                //        i = i + 1;
+                //    }
+                //}
+                //foreach (RowDefinition row in Rejilla.RowDefinitions)
+                //{
+                //    foreach(ColumnDefinition col in Rejilla.ColumnDefinitions)
+                //    {
+                //        double temp = cris.GetCelda(Convert.ToDouble(row), Convert.ToDouble(col)).GetTemperature();
+
+                //    }
+                //}
+                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
+
+                //File.WriteAllText(saveFileDialog.FileName, "hola");
+            }
+        }
+
+        private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            string selectedCC = ListBoxCC.SelectedItem.ToString();
+            if(selectedCC == "Constant Temperature")
+            {
+                CC_temp_constant = true;
+            }
+            else if(selectedCC== "Reflective Boundary")
+            {
+                CC_temp_constant = false;
+            }
+           
+        }
+
+        private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+
+        }
+
 
         //**************************************************************************************************
 
@@ -297,7 +368,7 @@ namespace Amplicacion
             double m = selectedParametros.Getm();
             double alpha = selectedParametros.GetAlpha();
             double delta = selectedParametros.GetDelta();
-            cris.NextDay(eps, m, alpha, delta);
+            cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
         }
 
@@ -363,10 +434,6 @@ namespace Amplicacion
             TempPhaseBox.Items.Add("Temperature");
             TempPhaseBox.Items.Add("Phase");
 
-            TempSelection.Items.Add("Select by cells");
-            TempSelection.Items.Add("Select by rows");
-            TempSelection.Items.Add("Select by columns");
-            TempSelection.SelectedItem = "Select by cells";
 
         }
 
@@ -592,29 +659,6 @@ namespace Amplicacion
                 temp = temp - 1 / filasD;
             }
 
-        }
-
-        private void TempSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            int sel=TempSelection.SelectedIndex;
-            if (sel ==0)
-            {
-                TaparBox0.Visibility = Visibility.Hidden;
-                TaparBox1.Visibility = Visibility.Hidden;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
-            else if (sel == 1)
-            {
-                TaparBox0.Visibility = Visibility.Hidden;
-                TaparBox1.Visibility = Visibility.Visible;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                TaparBox0.Visibility = Visibility.Visible;
-                TaparBox1.Visibility = Visibility.Hidden;
-                TaparBox2.Visibility = Visibility.Hidden;
-            }
         }
 
 

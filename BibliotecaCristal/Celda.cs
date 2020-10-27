@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Microsoft.Win32;
 
 namespace BibliotecaCristal
 {
@@ -22,6 +24,16 @@ namespace BibliotecaCristal
             this.T = T;
             this.phase = phase;
         }
+
+        //Construct buit
+        public Celda()
+        {
+            this.x = 0;
+            this.y = 0;
+            this.T = 0;
+            this.phase = 0;
+        }
+
 
         //METHODS TO OBTAIN VALUES
         public double GetX()

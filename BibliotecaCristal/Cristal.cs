@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+
 
 namespace BibliotecaCristal
 {
@@ -128,7 +130,7 @@ namespace BibliotecaCristal
         }
 
         //What happens each time-step
-        public void NextDay(double eps, double m, double alpha, double delta)
+        public void NextDay(double eps, double m, double alpha, double delta, bool CC)
         {
             Celda[,] futurecristall = new Celda[this.cristal.GetLength(0), this.cristal.GetLength(0)];
             int i = 0;
@@ -147,8 +149,18 @@ namespace BibliotecaCristal
                     double deltap_t = this.cristal[i, j].Set_Diff_Phase(eps, m, alpha, delta, lapPh);
                     double deltaT_t = this.cristal[i, j].Set_Diff_Temperature(eps, m, alpha, delta, lapPh, lapT);
                     double newphase = this.cristal[i, j].GetPhase() + deltap_t * delta_time;
-                    double newTemperature = this.cristal[i, j].GetTemperature() + deltaT_t * delta_time;
-                    Celda cell = new Celda(x, y, Math.Round(newTemperature,10), Math.Round(newphase,10));
+                    double newTemperature;
+                    //Si la CC dice que la temperatura es constante (CC=true), cambiamos la temperatura del contorno
+                    if (CC == true && (j==0 || i==0 || j==(futurecristall.GetLength(0)-1) || i == (futurecristall.GetLength(0) - 1)))
+                    {
+                        newTemperature = -1;
+                    }
+                    else
+                    {
+                        newTemperature = this.cristal[i, j].GetTemperature() + deltaT_t * delta_time;
+                    }
+                    
+                    Celda cell = new Celda(x, y, Math.Round(newTemperature, 10), Math.Round(newphase, 10));
                     futurecristall[i, j] = cell;
                     //count++;
                     //Console.WriteLine(count.ToString()+ " i:"+i.ToString()+" j:"+j.ToString());
@@ -157,6 +169,7 @@ namespace BibliotecaCristal
                 }
                 i++;
             }
+            
             this.cristal = futurecristall;
 
         }
