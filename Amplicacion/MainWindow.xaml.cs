@@ -226,7 +226,6 @@ namespace Amplicacion
 
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
-            Celda una_cela = new Celda();
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "";
             saveFileDialog.Title = "Save text Files";
@@ -234,16 +233,11 @@ namespace Amplicacion
             saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
-                
-            //StreamWriter un_archivo = new StreamWriter("Documento");
-
-            double posx = Convert.ToInt32(una_cela.GetX()); //fila
-            double posy = Convert.ToInt32(una_cela.GetY()); //columna
-            double Temp = una_cela.GetTemperature();
 
             if (saveFileDialog.ShowDialog() == true)
             {
                 text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                text_save.Text += (Convert.ToString(steps) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
                     text_save.Text += (para.GetName() + "\r\n");
@@ -255,83 +249,27 @@ namespace Amplicacion
                     text_save.Text += (para.GetDeltaTime() + "\r\n");
                 }
 
-                //int iiirow = 0;
-                //foreach (Celda cel in cris.GetRow(iiirow))
-                //{
-                //    posy = cel.GetX();
-                //    //posy = Convert.ToInt32(cris.GetCeldaij(iiirow, 0).GetX());
-                //    text_save.Text += Convert.ToString(posy + "\r\n");
-                //    iiirow++;
-                //}
-                //int iiicol = 0;
-                //foreach (Celda cel in cris.GetCol(iiicol))
-                //{
-                //    posx = cel.GetY(); ;
-                //    text_save.Text += Convert.ToString(posx + "\r\n");
-                //    iiicol++;
-                //}
                 int iiirow = 0;
+                double p = 0;
                 foreach (RowDefinition row in Rejilla.RowDefinitions)
                 {
                     int iiicol = 0;
                     foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
                     {
-                        text_save.Text += Convert.ToString(cris.GetRow(iiicol));
+                        double otrax = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetY());
+                        double otray = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetX());
+                        double temper = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetTemperature());
+                        double phase = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetPhase());
+
+                        text_save.Text += (Convert.ToString(otrax) + ' ' + Convert.ToString(otray) +' ' + Convert.ToString(temper) + ' ' + Convert.ToString(phase) + "\r\n");
+
                         iiicol++;
+                        p++;
                     }
                     iiirow++;
                 }
-                    //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
-                    //{
-                    //    int selected = TempSelection.SelectedIndex;
-                    //    if (selected == 0)
-                    //    {
-                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
-                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
-
-                    //    }
-                    //    else if (selected == 1)
-                    //    {
-                    //        posx = 0;
-                    //        posy = Convert.ToInt32(cris.GetCelda(i, j).GetY());
-                    //    }
-                    //    else
-                    //    {
-                    //        posx = Convert.ToInt32(cris.GetCelda(i, j).GetX());
-                    //        posy = 0;
-                    //        i = i + 1;
-                    //        j = j + 1;
-                    //    }
-                    //    text_save.Text += (posx, posy, T);
-                    //}
-
-
-                    File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0 && T <= 0 && T >= -1)
-                //{
-                //    T = Convert.ToInt32(cris.GetCelda(i, j).GetTemperature());
-                //    if (T != 0 && T != -1)
-                //    {
-                //        un_archivo.Write(Convert.ToString(T));
-                //    }
-                //    else
-                //    {
-                //        j = j + 1;
-                //        i = i + 1;
-                //    }
-                //}
-                //foreach (RowDefinition row in Rejilla.RowDefinitions)
-                //{
-                //    foreach(ColumnDefinition col in Rejilla.ColumnDefinitions)
-                //    {
-                //        double temp = cris.GetCelda(Convert.ToDouble(row), Convert.ToDouble(col)).GetTemperature();
-
-                //    }
-                //}
-                //if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
-
-                //File.WriteAllText(saveFileDialog.FileName, "hola");
             }
+            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
         }
 
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
