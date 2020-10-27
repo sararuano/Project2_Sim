@@ -103,7 +103,7 @@ namespace Amplicacion
             double m = selectedParametros.Getm();
             double alpha = selectedParametros.GetAlpha();
             double delta = selectedParametros.GetDelta();
-            cris.NextDay(eps, m, alpha, delta);
+            cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
 
         }
@@ -366,7 +366,7 @@ namespace Amplicacion
             double m = selectedParametros.Getm();
             double alpha = selectedParametros.GetAlpha();
             double delta = selectedParametros.GetDelta();
-            cris.NextDay(eps, m, alpha, delta);
+            cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
         }
 

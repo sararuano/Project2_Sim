@@ -22,7 +22,7 @@ namespace ConsolePruebas
                 if (count == 0)
                 { }
                 else
-                    cristalpruebas.NextDay(eps, m, aplha, delta);
+                    cristalpruebas.NextDay(eps, m, aplha, delta, false);
 
                 Console.WriteLine("Ciclo " + (count).ToString() + " / 0,0_______ Phase: " + cristalpruebas.GetCelda(0, 0).GetPhase() + " Tempe: " + cristalpruebas.GetCelda(0, 0).GetTemperature());
                 Console.WriteLine("       " + " / 1,0_______ Phase: " + cristalpruebas.GetCelda(-0.005, 0).GetPhase() + " Tempe: " + cristalpruebas.GetCelda(0.005, 0).GetTemperature());
