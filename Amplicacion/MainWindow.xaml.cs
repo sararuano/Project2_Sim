@@ -683,6 +683,8 @@ namespace Amplicacion
                     count++;
                     temp = temp - 1 / filasD;
                 }
+                text0.Text = "-1 \nSolid";
+                text1.Text = "0 \nLiquid";
             }
             else if (show_grid == "fase")
             {
@@ -700,7 +702,8 @@ namespace Amplicacion
                     count++;
                     fase = fase + 1/filasD;
                 }
-
+                text0.Text = "1\nSolid";
+                text1.Text = "0\nLiquid";
             }
 
         }
