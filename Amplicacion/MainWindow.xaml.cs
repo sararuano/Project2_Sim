@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using BibliotecaCristal;
 using System.IO;
 using Microsoft.Win32;
+using Syncfusion.UI.Xaml; 
 
 namespace Amplicacion
 {
@@ -34,7 +35,8 @@ namespace Amplicacion
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
         string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
-
+        ViewModel chartE;
+        List<PruebaChart> listChart;
 
         public MainWindow()
         {
@@ -52,6 +54,11 @@ namespace Amplicacion
             ListBoxCC.Items.Add("Reflective Boundary");
             CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
             show_grid = "temperatura";
+
+            // Sobre el chart
+            listChart = new List<PruebaChart>();
+            listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
+
 
             paintInitialT();
             createTempIndicator(100);
@@ -357,6 +364,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
+            añadirAlChart(cris.CalulateAverageT(),cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
@@ -668,6 +676,21 @@ namespace Amplicacion
                 temp = temp - 1 / filasD;
             }
 
+        }
+
+        public void añadirAlChart(double T, double P)
+        {
+            ViewModel chartE = new ViewModel();
+            foreach (PruebaChart element in listChart)
+            {
+                chartE.Data.Add(element);
+            }
+            double count = listChart.Count();
+            PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
+            chartE.Data.Add(newPoint);
+            listChart.Add(newPoint);
+            seriesChartP.ItemsSource = chartE.Data;
+            seriesChartT.ItemsSource = chartE.Data;
         }
     }
 }
