@@ -18,7 +18,7 @@ using System.Windows.Shapes;
 using BibliotecaCristal;
 using System.IO;
 using Microsoft.Win32;
-using Syncfusion.UI.Xaml; 
+using Syncfusion.UI.Xaml;
 
 namespace Amplicacion
 {
@@ -66,14 +66,14 @@ namespace Amplicacion
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
             clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
-            
+
         }
 
         //BOTONES
 
         //    Localiza de la lista de posibles parametros cuál es el clicado, lo selecciona (selectedParametros) 
         //    y llama a la funcion SetTextParametros que los escribe abajo
-        
+
         private void ListBoxParametros_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string selectedParametro = ListBoxParametros.SelectedItem.ToString();
@@ -148,7 +148,7 @@ namespace Amplicacion
             }
             else
             {
-                if(clock_time.Interval.TotalMilliseconds > 400)
+                if (clock_time.Interval.TotalMilliseconds > 400)
                 {
                     clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(200);
                 }
@@ -189,7 +189,7 @@ namespace Amplicacion
                 }
                 else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
                 textGridSize.Text = "";
-                
+
             }
         }
 
@@ -210,14 +210,14 @@ namespace Amplicacion
             int j;
             i = Convert.ToInt16(textXS.Text);
             j = Convert.ToInt16(textYS.Text);
-            
+
             if (j < Rejilla.RowDefinitions.Count() && j >= 0 && i < Rejilla.RowDefinitions.Count() && i >= 0)
             {
-                
+
                 cris.GetCeldaij(i, j).SetTemperature(0);
                 cris.GetCeldaij(i, j).SetPhase(0);
                 paintInitialT();
-                
+
                 textXS.Text = "";
                 textYS.Text = "";
             }
@@ -264,7 +264,7 @@ namespace Amplicacion
                         double temper = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetTemperature());
                         double phase = Convert.ToDouble(value: cris.GetCeldaij(iiirow, iiicol).GetPhase());
 
-                        text_save.Text += (Convert.ToString(otrax) + ' ' + Convert.ToString(otray) +' ' + Convert.ToString(temper) + ' ' + Convert.ToString(phase) + "\r\n");
+                        text_save.Text += (Convert.ToString(otrax) + ' ' + Convert.ToString(otray) + ' ' + Convert.ToString(temper) + ' ' + Convert.ToString(phase) + "\r\n");
 
                         iiicol++;
                         p++;
@@ -293,14 +293,14 @@ namespace Amplicacion
                 while ((line = reader.ReadLine()) != null)
                 {
                     string[] trozos = line.Split(' ');
-                    if (contador==0)
+                    if (contador == 0)
                     {
                         //fillNewListParametros(true, new List<Parametros>());
                         pan = new StackPanel[Convert.ToInt32(trozos[0]), Convert.ToInt32(trozos[0])];
                         CreateDataGridyCristal(Rejilla, Convert.ToInt32(trozos[0]));
                         paintInitialT();
                     }
-                    if (contador==1)
+                    if (contador == 1)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
@@ -332,15 +332,15 @@ namespace Amplicacion
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             string selectedCC = ListBoxCC.SelectedItem.ToString();
-            if(selectedCC == "Constant Temperature")
+            if (selectedCC == "Constant Temperature")
             {
                 CC_temp_constant = true;
             }
-            else if(selectedCC== "Reflective Boundary")
+            else if (selectedCC == "Reflective Boundary")
             {
                 CC_temp_constant = false;
             }
-           
+
         }
 
         private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
@@ -365,7 +365,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            añadirAlChart(cris.CalulateAverageT(),cris.CalulateAverageP());
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
@@ -374,7 +374,7 @@ namespace Amplicacion
             double width = Convert.ToDouble(Rejilla.Width);
             int filas = Rejilla.ColumnDefinitions.Count();
             double widthCasilla = width / filas;
-            double x = Math.Round(width-Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
+            double x = Math.Round(width - Convert.ToDouble(e.GetPosition(Rejilla).Y), 3);
             double y = Math.Round(Convert.ToDouble(e.GetPosition(Rejilla).X), 3);
             double temperature = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetTemperature();
             double phase = cris.GetCeldaij(Convert.ToInt32(Math.Round(((x - widthCasilla / 2) / widthCasilla), 0)), Convert.ToInt32(Math.Round(((y - widthCasilla / 2) / widthCasilla), 0))).GetPhase();
@@ -393,12 +393,14 @@ namespace Amplicacion
             {
                 show_grid = "temperatura";
                 paintInitialT();
+                createTempIndicator(100);
 
             }
             else if (index == 1)
             {
                 show_grid = "fase";
                 paintInitialT();
+                createTempIndicator(100);
 
             }
             else { }
@@ -473,7 +475,7 @@ namespace Amplicacion
 
         }
 
-        // Añade un stackpanel a cada celda del grid seleccionado y la pinta del color seleccionado
+        //**NO SE USA** Añade un stackpanel a cada celda del grid seleccionado y la pinta del color seleccionado
         private Grid CreateGridPanel(Color color)
         {
             int filas = Rejilla.RowDefinitions.Count();
@@ -575,17 +577,17 @@ namespace Amplicacion
                 iirow++;
             }
 
-            cris.GetCeldaij(filas-1 - fila, columna).SetTemperature(temp);
+            cris.GetCeldaij(filas - 1 - fila, columna).SetTemperature(temp);
         }
 
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura/fase a las celdas 
         private void paintInitialT()
         {
             int filas = Rejilla.RowDefinitions.Count();
-            
+
             Rejilla.Children.Clear();
 
-            
+
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
@@ -617,7 +619,7 @@ namespace Amplicacion
                         //{
                         //    phase = 1;
                         //}
-                        byte R = Convert.ToByte(Math.Round(255-phase * 255, 0));
+                        byte R = Convert.ToByte(Math.Round(255 - phase * 255, 0));
                         Color colorset = Color.FromArgb(R, 0, 0, 255);
                         Brush colorBrush = new SolidColorBrush(colorset);
 
@@ -668,7 +670,7 @@ namespace Amplicacion
             {
                 Double filasD = Convert.ToDouble(filas);
                 StackPanel panel = new StackPanel();
-                byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
+                byte R = Convert.ToByte(Math.Round(-temp*255, 0));
                 Color colorset = Color.FromArgb(255, 255, R, 0);
                 panel.Background = new SolidColorBrush(colorset);
                 Grid.SetRow(panel, count);
@@ -680,20 +682,20 @@ namespace Amplicacion
         }
 
         public void añadirAlChart(double T, double P)
-        {
-            ViewModel chartE = new ViewModel();
-            foreach (PruebaChart element in listChart)
             {
-                chartE.Data.Add(element);
-            }
-            double count = listChart.Count();
-            PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
-            chartE.Data.Add(newPoint);
-            listChart.Add(newPoint);
+                ViewModel chartE = new ViewModel();
+                foreach (PruebaChart element in listChart)
+                {
+                    chartE.Data.Add(element);
+                }
+                double count = listChart.Count();
+                PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
+                chartE.Data.Add(newPoint);
+                listChart.Add(newPoint);
             seriesChartP.ItemsSource = chartE.Data;
             seriesChartT.ItemsSource = chartE.Data;
         }
 
-        
-    }
-}
+
+        }
+    } 
