@@ -25,16 +25,6 @@ namespace BibliotecaCristal
             this.phase = phase;
         }
 
-        //Construct buit
-        public Celda()
-        {
-            this.x = 0;
-            this.y = 0;
-            this.T = 0;
-            this.phase = 0;
-        }
-
-
         //METHODS TO OBTAIN VALUES
         public double GetX()
         {
