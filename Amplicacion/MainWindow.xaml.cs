@@ -658,6 +658,8 @@ namespace Amplicacion
         //Crea el indicadoor de temperatura de la derecha 
         private void createTempIndicator(int filas)
         {
+            
+            int contar=TempIndicator.RowDefinitions.Count();
             int count = 0;
             while (count < filas)
             {
@@ -670,7 +672,7 @@ namespace Amplicacion
             {
                 Double filasD = Convert.ToDouble(filas);
                 StackPanel panel = new StackPanel();
-                byte R = Convert.ToByte(Math.Round(-temp*255, 0));
+                byte R = Convert.ToByte(Math.Round(-temp * 255, 0));
                 Color colorset = Color.FromArgb(255, 255, R, 0);
                 panel.Background = new SolidColorBrush(colorset);
                 Grid.SetRow(panel, count);
@@ -682,20 +684,19 @@ namespace Amplicacion
         }
 
         public void añadirAlChart(double T, double P)
+        {
+            ViewModel chartE = new ViewModel();
+            foreach (PruebaChart element in listChart)
             {
-                ViewModel chartE = new ViewModel();
-                foreach (PruebaChart element in listChart)
-                {
-                    chartE.Data.Add(element);
-                }
-                double count = listChart.Count();
-                PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
-                chartE.Data.Add(newPoint);
-                listChart.Add(newPoint);
+                chartE.Data.Add(element);
+            }
+            double count = listChart.Count();
+            PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
+            chartE.Data.Add(newPoint);
+            listChart.Add(newPoint);
             seriesChartP.ItemsSource = chartE.Data;
             seriesChartT.ItemsSource = chartE.Data;
         }
 
-
-        }
-    } 
+    }
+}
