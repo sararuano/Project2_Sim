@@ -619,8 +619,8 @@ namespace Amplicacion
                         //{
                         //    phase = 1;
                         //}
-                        byte R = Convert.ToByte(Math.Round(255 - phase * 255, 0));
-                        Color colorset = Color.FromArgb(R, 0, 0, 255);
+                        byte R = Convert.ToByte(Math.Round(phase * 255, 0));
+                        Color colorset = Color.FromArgb(255, 0, R, 255);
                         Brush colorBrush = new SolidColorBrush(colorset);
 
                         StackPanel panel = new StackPanel();
@@ -667,18 +667,40 @@ namespace Amplicacion
                 count++;
             }
             count = 0;
-            double temp = 0;
-            foreach (RowDefinition row in TempIndicator.RowDefinitions)
+            if (show_grid == "temperatura")
             {
-                Double filasD = Convert.ToDouble(filas);
-                StackPanel panel = new StackPanel();
-                byte R = Convert.ToByte(Math.Round(-temp * 255, 0));
-                Color colorset = Color.FromArgb(255, 255, R, 0);
-                panel.Background = new SolidColorBrush(colorset);
-                Grid.SetRow(panel, count);
-                TempIndicator.Children.Add(panel);
-                count++;
-                temp = temp - 1 / filasD;
+                double temp = 0;
+                foreach (RowDefinition row in TempIndicator.RowDefinitions)
+                {
+                    contar = TempIndicator.RowDefinitions.Count();
+                    Double filasD = Convert.ToDouble(filas);
+                    StackPanel panel = new StackPanel();
+                    byte R = Convert.ToByte(Math.Round(-temp * 255 * 100 / contar, 0));
+                    Color colorset = Color.FromArgb(255, 255, R, 0);
+                    panel.Background = new SolidColorBrush(colorset);
+                    Grid.SetRow(panel, count);
+                    TempIndicator.Children.Add(panel);
+                    count++;
+                    temp = temp - 1 / filasD;
+                }
+            }
+            else if (show_grid == "fase")
+            {
+                double fase = 0;
+                foreach (RowDefinition row in TempIndicator.RowDefinitions)
+                {
+                    contar = TempIndicator.RowDefinitions.Count();
+                    Double filasD = Convert.ToDouble(filas);
+                    StackPanel panel = new StackPanel();
+                    byte R = Convert.ToByte(Math.Round(fase * 255*100/contar, 0));
+                    Color colorset = Color.FromArgb(255, 0, R, 255);
+                    panel.Background = new SolidColorBrush(colorset);
+                    Grid.SetRow(panel, count);
+                    TempIndicator.Children.Add(panel);
+                    count++;
+                    fase = fase + 1/filasD;
+                }
+
             }
 
         }
