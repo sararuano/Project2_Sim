@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chart.cs" />
     <Compile Include="Cristal.cs" />
     <Compile Include="Celda.cs" />
     <Compile Include="Parametros.cs" />
