@@ -129,6 +129,44 @@ namespace BibliotecaCristal
             this.cristal[i, j].SetTemperature(0);
         }
 
+        // Calculate the average T and P of the grid
+        public double CalulateAverageT()
+        {
+            int filas = this.GetCristal().GetLength(0);
+            int i = 0;
+            double averT = 0;
+            while (i < filas)
+            {
+                int j = 0;
+                while (j < filas)
+                {
+                    averT = averT + this.GetCeldaij(i, j).GetTemperature();
+                    j++;
+                }
+                i++;
+            }
+            averT = averT / Math.Pow(filas, 2);
+            return averT;
+        }
+        public double CalulateAverageP()
+        {
+            int filas = this.GetCristal().GetLength(0);
+            int i = 0;
+            double averP = 0;
+            while (i < filas)
+            {
+                int j = 0;
+                while (j < filas)
+                {
+                    averP = averP + this.GetCeldaij(i, j).GetPhase();
+                    j++;
+                }
+                i++;
+            }
+            averP = averP / Math.Pow(filas, 2);
+            return averP;
+        }
+
         //What happens each time-step
         public void NextDay(double eps, double m, double alpha, double delta, bool CC)
         {
