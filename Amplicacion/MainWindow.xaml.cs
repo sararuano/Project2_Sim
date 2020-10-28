@@ -61,7 +61,6 @@ namespace Amplicacion
 
 
             paintInitialT();
-            createTempIndicator(100);
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
@@ -115,7 +114,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -658,13 +657,18 @@ namespace Amplicacion
         //Crea el indicadoor de temperatura de la derecha 
         private void createTempIndicator(int filas)
         {
-            
+            TempIndicator.Children.Clear();
             int contar=TempIndicator.RowDefinitions.Count();
             int count = 0;
-            while (count < filas)
+            if (TempIndicator.RowDefinitions.Count() > 0)
+            { }
+            else
             {
-                TempIndicator.RowDefinitions.Add(new RowDefinition());
-                count++;
+                while (count < filas)
+                {
+                    TempIndicator.RowDefinitions.Add(new RowDefinition());
+                    count++;
+                }
             }
             count = 0;
             if (show_grid == "temperatura")
@@ -675,7 +679,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(-temp * 255 * 100 / contar, 0));
+                    byte R = Convert.ToByte(Math.Round(255+temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -683,8 +687,8 @@ namespace Amplicacion
                     count++;
                     temp = temp - 1 / filasD;
                 }
-                text0.Text = "-1 \nSolid";
-                text1.Text = "0 \nLiquid";
+                text0.Text = "-1 \nLiquid";
+                text1.Text = "0 \nSolid";
             }
             else if (show_grid == "fase")
             {
@@ -694,7 +698,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(fase * 255*100/contar, 0));
+                    byte R = Convert.ToByte(Math.Round(255-fase * 255, 0));
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -702,8 +706,8 @@ namespace Amplicacion
                     count++;
                     fase = fase + 1/filasD;
                 }
-                text0.Text = "1\nSolid";
-                text1.Text = "0\nLiquid";
+                text0.Text = "1\nLiquid";
+                text1.Text = "0\nSolid";
             }
 
         }
