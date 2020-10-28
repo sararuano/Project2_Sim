@@ -73,7 +73,8 @@ namespace Amplicacion
 
         //    Localiza de la lista de posibles parametros cuál es el clicado, lo selecciona (selectedParametros) 
         //    y llama a la funcion SetTextParametros que los escribe abajo
-        private void ListParametros_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        
+        private void ListBoxParametros_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string selectedParametro = ListBoxParametros.SelectedItem.ToString();
             foreach (Parametros par in listaParametros)
@@ -692,5 +693,7 @@ namespace Amplicacion
             seriesChartP.ItemsSource = chartE.Data;
             seriesChartT.ItemsSource = chartE.Data;
         }
+
+        
     }
 }
