@@ -30,7 +30,7 @@ namespace Amplicacion
         Cristal cris;
         
         int steps;
-        DispatcherTimer clock_time;
+        DispatcherTimer clock_time = new DispatcherTimer();
         List<Parametros> listaParametros;
         Parametros selectedParametros;
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
@@ -38,6 +38,7 @@ namespace Amplicacion
         StackPanel[,] pan;
         ViewModel chartE;
         List<PruebaChart> listChart;
+
 
         public MainWindow()
         {
@@ -136,34 +137,6 @@ namespace Amplicacion
             }
         }
 
-        //Para ralentizar
-        private void Slow_Button_Click(object sender, RoutedEventArgs e)
-        {
-            clock_time.Interval = clock_time.Interval + TimeSpan.FromMilliseconds(200);
-        }
-
-        //Para acelerar
-        private void Fast_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (clock_time.Interval.TotalMilliseconds > 1000)
-            {
-                clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(500);
-            }
-            else
-            {
-                if (clock_time.Interval.TotalMilliseconds > 400)
-                {
-                    clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(200);
-                }
-                else
-                {
-                    if (clock_time.Interval.TotalMilliseconds > 10)
-                    {
-                        clock_time.Interval = clock_time.Interval - TimeSpan.FromMilliseconds(10);
-                    }
-                }
-            }
-        }
         //Per tornar a començar
         private void Restart_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -356,10 +329,7 @@ namespace Amplicacion
 
         }
 
-        private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
-        {
 
-        }
 
 
         //**************************************************************************************************
@@ -398,7 +368,7 @@ namespace Amplicacion
             textPhase.Text = phase.ToString();
         }
 
-        // **INACABADA** Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
+        //Esconde y muestra un panel u otro en funcion de que opcion temp/phase se haya seleccionado en el combobox
         private void TempPhaseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int index = TempPhaseBox.SelectedIndex;
@@ -417,6 +387,21 @@ namespace Amplicacion
 
             }
             else { }
+        }
+
+        //Cambia el valor del periodo entre steps
+        private void SliderVelocity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            double periodo = SliderVelocity.Value* 10000000;        //Se multiplica este factor porque el intervalo del reloj se mide en cientos de nanosegundos
+            
+            clock_time.Interval = new TimeSpan((long)periodo);
+            
+        }
+
+        //**VACÍA**
+        private void text_save_ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+
         }
 
         //******************************************************************************************************
@@ -725,6 +710,10 @@ namespace Amplicacion
             }
 
         }
+
+
+
+
 
         public void añadirAlChart(double T, double P)
         {
