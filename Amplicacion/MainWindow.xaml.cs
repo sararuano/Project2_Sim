@@ -28,7 +28,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
-        
+
         int steps;
         DispatcherTimer clock_time = new DispatcherTimer();
         List<Parametros> listaParametros;
@@ -58,7 +58,7 @@ namespace Amplicacion
             show_grid = "temperatura";
 
 
-            
+
             // Sobre el chart
             listChart = new List<PruebaChart>();
             listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
@@ -149,6 +149,13 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
+
+            show_grid = "temperatura";
+            TempPhaseBox.Items.Clear();
+
+            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Add("Phase");
+            TempPhaseBox.SelectedItem = "Temperature";
         }
 
         //Cambia el tamaño de las celdas
@@ -171,7 +178,7 @@ namespace Amplicacion
 
                 }
             }
-            catch(Exception exc) { MessageBox.Show(exc.Message); }
+            catch (Exception exc) { MessageBox.Show(exc.Message); }
         }
 
         //Solidifica la celda del medio
@@ -224,7 +231,7 @@ namespace Amplicacion
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
-                    text_save.Text += (para.GetName() +' '+ para.GetEpsilon() +' '+ para.Getm() + ' ' + para.GetDelta()+ ' ' + para.GetAlpha() + "\r\n");
+                    text_save.Text += (para.GetName() + ' ' + para.GetEpsilon() + ' ' + para.Getm() + ' ' + para.GetDelta() + ' ' + para.GetAlpha() + "\r\n");
                 }
 
                 int iiirow = 0;
@@ -265,8 +272,8 @@ namespace Amplicacion
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
 
-                while ((line = reader.ReadLine()) != null)  
-                { 
+                while ((line = reader.ReadLine()) != null)
+                {
                     string[] trozos = line.Split(' ');
                     if (contador == 0)
                     {
@@ -293,7 +300,7 @@ namespace Amplicacion
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
-                    }  
+                    }
                     if (contador > 3)
                     {
                         cris.GetCristal();
@@ -397,10 +404,10 @@ namespace Amplicacion
         //Cambia el valor del periodo entre steps
         private void SliderVelocity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            double periodo = SliderVelocity.Value* 10000000;        //Se multiplica este factor porque el intervalo del reloj se mide en cientos de nanosegundos
-            
+            double periodo = SliderVelocity.Value * 10000000;        //Se multiplica este factor porque el intervalo del reloj se mide en cientos de nanosegundos
+
             clock_time.Interval = new TimeSpan((long)periodo);
-            
+
         }
 
         //**VACÍA**
@@ -433,6 +440,7 @@ namespace Amplicacion
             {
                 ListBoxParametros.Items.Add(par.GetName());
             }
+            TempPhaseBox.Items.Clear();
             TempPhaseBox.Items.Add("Temperature");
             TempPhaseBox.Items.Add("Phase");
 
@@ -662,7 +670,7 @@ namespace Amplicacion
         private void createTempIndicator(int filas)
         {
             TempIndicator.Children.Clear();
-            int contar=TempIndicator.RowDefinitions.Count();
+            int contar = TempIndicator.RowDefinitions.Count();
             int count = 0;
             if (TempIndicator.RowDefinitions.Count() > 0)
             { }
@@ -683,7 +691,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255+temp * 255, 0));
+                    byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -702,13 +710,13 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255-fase * 255, 0));
+                    byte R = Convert.ToByte(Math.Round(255 - fase * 255, 0));
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
                     TempIndicator.Children.Add(panel);
                     count++;
-                    fase = fase + 1/filasD;
+                    fase = fase + 1 / filasD;
                 }
                 text0.Text = "1\nLiquid";
                 text1.Text = "0\nSolid";
@@ -736,4 +744,5 @@ namespace Amplicacion
         }
 
     }
+
 }
