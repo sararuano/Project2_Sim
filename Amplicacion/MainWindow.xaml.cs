@@ -36,7 +36,7 @@ namespace Amplicacion
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
         string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
-        ViewModel chartE;
+        //ViewModel chartE;
         List<PruebaChart> listChart;
 
 
@@ -58,11 +58,10 @@ namespace Amplicacion
             show_grid = "temperatura";
 
 
-            
+
             // Sobre el chart
             listChart = new List<PruebaChart>();
             listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
-
 
 
             paintInitialT();
@@ -119,7 +118,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -149,6 +148,12 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
+
+            show_grid = "temperatura";
+            TempPhaseBox.SelectedItem = "Temperature";
+            TempPhaseBox.Items.Remove("Temperature");
+            TempPhaseBox.Items.Remove("Phase");
+            
         }
 
         //Cambia el tamaño de las celdas
@@ -202,7 +207,6 @@ namespace Amplicacion
 
         }
 
-
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -215,7 +219,12 @@ namespace Amplicacion
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                foreach (PruebaChart una_chart in listChart)
+                {
+                    text_save.Text = (Convert.ToString(una_chart.timeChart) + ' ' + Convert.ToString(una_chart.casillasT) + ' ' + Convert.ToString(una_chart.casillasP) + "\r\n");
+                }
+                text_save.Text += (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
+                text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
@@ -241,9 +250,9 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
+                File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+                MessageBox.Show("S'ha guardat tot correctament");
             }
-            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-            MessageBox.Show("S'ha guardat tot correctament");
         }
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
@@ -265,31 +274,58 @@ namespace Amplicacion
                     string[] trozos = line.Split(' ');
                     if (contador == 0)
                     {
+                        foreach (PruebaChart prueeba in listChart)
+                        {
+                            double timeChart = Convert.ToDouble(trozos[0]);
+                            double casillaasT = Convert.ToDouble(trozos[1]);
+                            double casillasP = Convert.ToDouble(trozos[2]);
+                            timeChart = prueeba.timeChart;
+                            casillaasT = prueeba.casillasT;
+                            casillasP = prueeba.casillasP;
+                        }
+                    }
+                    if (contador == 1)
+                    {
+                        int indeex = Convert.ToInt32(trozos[0]);
+                        if (indeex == 0)
+                        {
+                            show_grid = "temperatura";
+                            TempPhaseBox.SelectedItem = "Temperature";
+                        }
+                        else if (indeex == 1)
+                        {
+                            show_grid = "fase";
+                            TempPhaseBox.SelectedItem = "Phase";
+                        }
+                        else { }
+                    }
+                    if (contador == 2)
+                    {
                         int rej = Convert.ToInt32(trozos[0]);
 
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
-                    if (contador == 1)
+                    if (contador == 3)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
-                    if (contador == 2)
+                    if (contador == 4)
                     {
                         string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-                    if (contador == 3)
+                    if (contador == 5)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
                     }  
-                    if (contador > 3)
+                    if (contador > 5)
                     {
                         cris.GetCristal();
 
@@ -348,7 +384,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
@@ -682,7 +718,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     temp = temp - 1 / filasD;
                 }
@@ -701,7 +741,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     fase = fase + 1/filasD;
                 }
@@ -710,10 +754,6 @@ namespace Amplicacion
             }
 
         }
-
-
-
-
 
         public void añadirAlChart(double T, double P)
         {
@@ -726,9 +766,8 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
-            seriesChartP.ItemsSource = chartE.Data;
-            seriesChartT.ItemsSource = chartE.Data;
+            //seriesChartP.ItemsSource = chartE.Data;
+            //seriesChartT.ItemsSource = chartE.Data;
         }
-
     }
 }
