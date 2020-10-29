@@ -36,7 +36,7 @@ namespace Amplicacion
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
         string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
-        ViewModel chartE;
+        //ViewModel chartE;
         List<PruebaChart> listChart;
 
 
@@ -58,11 +58,10 @@ namespace Amplicacion
             show_grid = "temperatura";
 
 
-            
+
             // Sobre el chart
             listChart = new List<PruebaChart>();
             listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
-
 
 
             paintInitialT();
@@ -119,7 +118,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -149,6 +148,12 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
+
+            show_grid = "temperatura";
+            TempPhaseBox.SelectedItem = "Temperature";
+            TempPhaseBox.Items.Remove("Temperature");
+            TempPhaseBox.Items.Remove("Phase");
+            
         }
 
         //Cambia el tamaño de las celdas
@@ -202,12 +207,11 @@ namespace Amplicacion
 
         }
 
-
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "";
-            saveFileDialog.Title = "Save text Files";
+            saveFileDialog.Title = "Save Text Files";
             saveFileDialog.DefaultExt = "txt";
             saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog.FilterIndex = 2;
@@ -322,6 +326,7 @@ namespace Amplicacion
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
                     }
+
                     if (contador > 5)
                     {
                         cris.GetCristal();
@@ -381,7 +386,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
@@ -715,7 +720,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     temp = temp - 1 / filasD;
                 }
@@ -734,7 +743,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     fase = fase + 1/filasD;
                 }
@@ -743,10 +756,6 @@ namespace Amplicacion
             }
 
         }
-
-
-
-
 
         public void añadirAlChart(double T, double P)
         {
@@ -759,9 +768,8 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
-            seriesChartP.ItemsSource = chartE.Data;
-            seriesChartT.ItemsSource = chartE.Data;
+            //seriesChartP.ItemsSource = chartE.Data;
+            //seriesChartT.ItemsSource = chartE.Data;
         }
-
     }
 }
