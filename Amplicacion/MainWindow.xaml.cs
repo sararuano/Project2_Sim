@@ -246,6 +246,7 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
+
                 File.WriteAllText(saveFileDialog.FileName, text_save.Text);
                 MessageBox.Show("S'ha guardat tot correctament");
             }
