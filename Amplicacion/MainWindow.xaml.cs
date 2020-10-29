@@ -250,9 +250,8 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
-
                 File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-                MessageBox.Show("S'ha guardat tot correctament");
+                MessageBox.Show("S'ha guardat correctament");
             }
         }
 
@@ -275,14 +274,14 @@ namespace Amplicacion
                     string[] trozos = line.Split(' ');
                     if (contador == 0)
                     {
-                        foreach (PruebaChart otrachart in listChart)
+                        foreach (PruebaChart prueeba in listChart)
                         {
-                            double temp = Convert.ToDouble(trozos[0]);
-                            double casillasT = Convert.ToDouble(trozos[1]);
+                            double timeChart = Convert.ToDouble(trozos[0]);
+                            double casillaasT = Convert.ToDouble(trozos[1]);
                             double casillasP = Convert.ToDouble(trozos[2]);
-                            temp = otrachart.timeChart;
-                            casillasT = otrachart.casillasT;
-                            casillasP = otrachart.casillasP;
+                            timeChart = prueeba.timeChart;
+                            casillaasT = prueeba.casillasT;
+                            casillasP = prueeba.casillasP;
                         }
                     }
                     if (contador == 1)
