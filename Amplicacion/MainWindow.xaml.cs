@@ -267,12 +267,12 @@ namespace Amplicacion
             {
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
-                int contador = 0;
+                int contado = 0;
 
                 while ((line = reader.ReadLine()) != null)
                 {
                     string[] trozos = line.Split(' ');
-                    if (contador == 0)
+                    if (contado == 0)
                     {
                         foreach (PruebaChart prueeba in listChart)
                         {
@@ -286,7 +286,7 @@ namespace Amplicacion
 
                         }
                     }
-                    if (contador == 1)
+                    if (contado == 1)
                     {
                         int indeex = Convert.ToInt32(trozos[0]);
                         if (indeex == 0)
@@ -301,26 +301,26 @@ namespace Amplicacion
                         }
                         else { }
                     }
-                    if (contador == 2)
+                    if (contado == 2)
                     {
                         int rej = Convert.ToInt32(trozos[0]);
 
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
-                    if (contador == 3)
+                    if (contado == 3)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
-                    if (contador == 4)
+                    if (contado == 4)
                     {
                         string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-                    if (contador == 5)
+                    if (contado == 5)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
@@ -328,7 +328,7 @@ namespace Amplicacion
                         SetTextParametros(par_2);
                     }
 
-                    if (contador > 5)
+                    if (contado > 5)
                     {
                         cris.GetCristal();
 
@@ -337,7 +337,7 @@ namespace Amplicacion
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetTemperature(Convert.ToDouble(trozos[2]));
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetPhase(Convert.ToDouble(trozos[3]));
                     }
-                    contador++;
+                    contado++;
                     paintInitialT();
                 }
 
