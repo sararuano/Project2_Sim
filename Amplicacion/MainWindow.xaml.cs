@@ -154,19 +154,24 @@ namespace Amplicacion
         //Cambia el tamaño de las celdas
         private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
         {
-            if (textGridSize.Text != "")
+            try
             {
-                int valor = Convert.ToInt16(textGridSize.Text);
-                if (valor % 2 == 1)
-                {
-                    CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
-                    pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-                    paintInitialT();
-                }
-                else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
-                textGridSize.Text = "";
 
+                if (textGridSize.Text != "")
+                {
+                    int valor = Convert.ToInt16(textGridSize.Text);
+                    if (valor % 2 == 1)
+                    {
+                        CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                        pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                        paintInitialT();
+                    }
+                    else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
+                    textGridSize.Text = "";
+
+                }
             }
+            catch(Exception exc) { MessageBox.Show(exc.Message); }
         }
 
         //Solidifica la celda del medio
