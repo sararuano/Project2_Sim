@@ -28,6 +28,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
+        
         int steps;
         DispatcherTimer clock_time;
         List<Parametros> listaParametros;
@@ -55,13 +56,15 @@ namespace Amplicacion
             CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
             show_grid = "temperatura";
 
+
+            
             // Sobre el chart
             listChart = new List<PruebaChart>();
             listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
 
 
+
             paintInitialT();
-            createTempIndicator(100);
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
@@ -115,7 +118,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -243,13 +246,7 @@ namespace Amplicacion
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
-                    text_save.Text += (para.GetName() + "\r\n");
-                    text_save.Text += (para.GetEpsilon() + "\r\n");
-                    text_save.Text += (para.Getm() + "\r\n");
-                    text_save.Text += (para.GetDelta() + "\r\n");
-                    text_save.Text += (para.GetAlpha() + "\r\n");
-                    text_save.Text += (para.GetDeltaSpace() + "\r\n");
-                    text_save.Text += (para.GetDeltaTime() + "\r\n");
+                    text_save.Text += (para.GetName() +' '+ para.GetEpsilon() +' '+ para.Getm() + ' ' + para.GetDelta()+ ' ' + para.GetAlpha() + "\r\n");
                 }
 
                 int iiirow = 0;
@@ -279,7 +276,6 @@ namespace Amplicacion
         private void Load_Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            //openFileDialog.InitialDirectory = "c:\\";
             openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
@@ -290,43 +286,60 @@ namespace Amplicacion
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
-                while ((line = reader.ReadLine()) != null)
-                {
+
+                while ((line = reader.ReadLine()) != null)  
+                { 
                     string[] trozos = line.Split(' ');
                     if (contador == 0)
                     {
-                        //fillNewListParametros(true, new List<Parametros>());
-                        pan = new StackPanel[Convert.ToInt32(trozos[0]), Convert.ToInt32(trozos[0])];
-                        CreateDataGridyCristal(Rejilla, Convert.ToInt32(trozos[0]));
-                        paintInitialT();
+                        int rej = Convert.ToInt32(trozos[0]);
+
+                        pan = new StackPanel[rej, rej];
+                        CreateDataGridyCristal(Rejilla, rej);
                     }
                     if (contador == 1)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
+                    if (contador == 2)
+                    {
+                        string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
+                        Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
+                        listaParametros.Add(par_1);
+                        SetTextParametros(par_1);
+                    }
+                    if (contador == 3)
+                    {
+                        string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
+                        Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
+                        listaParametros.Add(par_2);
+                        SetTextParametros(par_2);
+                    }  
+                    if (contador > 3)
+                    {
+                        cris.GetCristal();
+
+                        cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetY(Convert.ToDouble(trozos[0]));
+                        cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetX(Convert.ToDouble(trozos[1]));
+                        cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetTemperature(Convert.ToDouble(trozos[2]));
+                        cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetPhase(Convert.ToDouble(trozos[3]));
+                    }
                     contador++;
+                    paintInitialT();
+                }
+
+                if (Convert.ToBoolean(reader.ReadLine()) == true)
+                {
+                    Auto_Button.Content = "STOP";
+                    clock_time.Start();
+                }
+
+                else
+                {
+                    Auto_Button.Content = "AUTO";
                 }
             }
-            ////definim el primer dia
-            //steps = 1;
-            //step_box.Content = Convert.ToString(steps);
-
-            ////rejilla
-            //fillNewListParametros(true, new List<Parametros>());
-            //CreateDataGridyCristal(Rejilla, 15);
-            //pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-            //ListBoxCC.Items.Add("Constant Temperature");
-            //ListBoxCC.Items.Add("Reflective Boundary");
-            //CC_temp_constant = false; //determinamos que por defecto la simulación tendrá contorno reflector
-            //show_grid = "temperatura";
-
-            //paintInitialT();
-            //createTempIndicator(100);
-
-            //clock_time = new DispatcherTimer();
-            //clock_time.Tick += new EventHandler(clock_time_Tick);
-            //clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
         }
 
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -658,13 +671,18 @@ namespace Amplicacion
         //Crea el indicadoor de temperatura de la derecha 
         private void createTempIndicator(int filas)
         {
-            
+            TempIndicator.Children.Clear();
             int contar=TempIndicator.RowDefinitions.Count();
             int count = 0;
-            while (count < filas)
+            if (TempIndicator.RowDefinitions.Count() > 0)
+            { }
+            else
             {
-                TempIndicator.RowDefinitions.Add(new RowDefinition());
-                count++;
+                while (count < filas)
+                {
+                    TempIndicator.RowDefinitions.Add(new RowDefinition());
+                    count++;
+                }
             }
             count = 0;
             if (show_grid == "temperatura")
@@ -675,7 +693,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(-temp * 255 * 100 / contar, 0));
+                    byte R = Convert.ToByte(Math.Round(255+temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -683,8 +701,8 @@ namespace Amplicacion
                     count++;
                     temp = temp - 1 / filasD;
                 }
-                text0.Text = "-1 \nSolid";
-                text1.Text = "0 \nLiquid";
+                text0.Text = "-1 \nLiquid";
+                text1.Text = "0 \nSolid";
             }
             else if (show_grid == "fase")
             {
@@ -694,7 +712,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(fase * 255*100/contar, 0));
+                    byte R = Convert.ToByte(Math.Round(255-fase * 255, 0));
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -702,8 +720,8 @@ namespace Amplicacion
                     count++;
                     fase = fase + 1/filasD;
                 }
-                text0.Text = "1\nSolid";
-                text1.Text = "0\nLiquid";
+                text0.Text = "1\nLiquid";
+                text1.Text = "0\nSolid";
             }
 
         }

@@ -183,6 +183,23 @@
                     </chart:LineSeries>
 
                 </chart:SfChart>
+                <Grid x:Name="GridTPAverage" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                    <Grid.ColumnDefinitions >
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="textTaa"  HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10" Grid.Column="1" Grid.Row="0" />
+                    <TextBox x:Name="textPaa"  HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="1" Grid.Row="1" Width="40" />
+                    <TextBox x:Name="labelTaa" Text="Average Temperature:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="10"  Grid.Column="0" Grid.Row="0" BorderBrush="Transparent" Background="Transparent"  />
+                    <TextBox x:Name="labelPaa" Text="Average Phase:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="0" Grid.Row="1" BorderBrush="Transparent" Background="Transparent"  />
+
+                </Grid>
+                
 
             </StackPanel>
             <DockPanel HorizontalAlignment="Left" Height="100" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top" Width="100"/>
