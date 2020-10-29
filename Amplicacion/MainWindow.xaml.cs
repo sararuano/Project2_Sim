@@ -279,9 +279,11 @@ namespace Amplicacion
                             double timeChart = Convert.ToDouble(trozos[0]);
                             double casillaasT = Convert.ToDouble(trozos[1]);
                             double casillasP = Convert.ToDouble(trozos[2]);
+
                             timeChart = prueeba.timeChart;
                             casillaasT = prueeba.casillasT;
                             casillasP = prueeba.casillasP;
+
                         }
                     }
                     if (contador == 1)
