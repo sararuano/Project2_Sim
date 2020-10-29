@@ -80,14 +80,20 @@ namespace Amplicacion
 
         private void ListBoxParametros_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string selectedParametro = ListBoxParametros.SelectedItem.ToString();
-            foreach (Parametros par in listaParametros)
+            if (ListBoxParametros.Items.Count == 0)
             {
-                if (par.GetName() == selectedParametro)
+            }
+            else
+            {
+                string selectedParametro = ListBoxParametros.SelectedItem.ToString();
+                foreach (Parametros par in listaParametros)
                 {
-                    //Select new Par
-                    selectedParametros = par;
-                    SetTextParametros(par);
+                    if (par.GetName() == selectedParametro)
+                    {
+                        //Select new Par
+                        selectedParametros = par;
+                        SetTextParametros(par);
+                    }
                 }
             }
         }
