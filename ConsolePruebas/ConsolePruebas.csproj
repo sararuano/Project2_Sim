@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Syncfusion.Xamarin.SfChart" Version="18.3.0.44" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BibliotecaCristal\BibliotecaCristal.csproj" />
   </ItemGroup>
 

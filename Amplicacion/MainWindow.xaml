@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0" 
         xmlns:local="clr-namespace:Amplicacion" 
-        xmlns:chart="http://schemas.syncfusion.com/wpf"
+        
+       
+        xmlns:chart="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="470" Width="957.333" Background="#FFCDCDCD" AutomationProperties.IsRowHeader="True">
 
@@ -179,13 +181,15 @@
             <Grid x:Name="TempIndicator" Height="200" Width="20" Margin="190,-550,0,0" >
                 <Grid.RowDefinitions></Grid.RowDefinitions>
             </Grid>
-            <TextBox x:Name="text0" Text="-1\nSolid" Height="36" Margin="275,-717,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
+            <TextBox x:Name="text0" Text="-1\nSolid" Height="36" Margin="275,-737,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
+            <TextBox x:Name="textMed" Text="" Height="18" Margin="275,-687,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
             <TextBox x:Name="text1" Text="0\nLiquid" Height="36" Margin="275,-355,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36" HorizontalAlignment="Left"/>
 
         </StackPanel>
         <StackPanel x:Name="PanelCol3" Grid.Column="2" Margin="0,10,10,10" Background="White">
             <StackPanel x:Name="PanelChart" Height="400" Margin="5,10,5,0">
                 <StackPanel x:Name="HuecoGraficos" Margin="0,5,0,5" Height="300">
+                    
                     <!--<chart:SfChart x:Name="chartP" Margin="5,0,5,0" Height="150" >
 
                         <chart:SfChart.Header>
@@ -204,6 +208,37 @@
                         </chart:LineSeries>
                     </chart:SfChart>
                     <chart:SfChart x:Name="chartT" Margin="5,0,5,0" Height="150" >
+                        <chart:SfChart.Header>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average temperature progresion</TextBlock>
+                        </chart:SfChart.Header>
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:NumericalAxis x:Name="xAxisT"/>
+                        </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis x:Name="yAxisT" Maximum="-0.7" Minimum="-1.1"/>
+                        </chart:SfChart.SecondaryAxis>
+                        <chart:LineSeries x:Name="seriesChartT" ShowTooltip="True" Label="Average temperature" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasT" ListenPropertyChange="True">
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo ShowLabel="True"/>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                    </chart:SfChart>-->
+                    
+                    <!--<chart:CartesianChart x:Name="chartP" Margin="5,0,5,0" Height="150" Series="{Binding casillasP}" >
+
+                        <chart:CartesianChart.Content>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average phase progresion</TextBlock>
+                        </chart:CartesianChart.Content>
+                        <chart:CartesianChart.AxisY>
+                            <chart:Axis x:Name="YAxisP" MaxValue="1.1" MinValue="0.7"   />
+                        </chart:CartesianChart.AxisY>
+                        <chart:CartesianChart.AxisX>
+                            <chart:Axis x:Name="XAxisP"  Labels="{Binding timeChart}"  />
+                        </chart:CartesianChart.AxisX>
+                        
+                    </chart:CartesianChart>-->
+                    
+                    <!--<chart:SfChart x:Name="chartT" Margin="5,0,5,0" Height="150" >
                         <chart:SfChart.Header>
                             <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average temperature progresion</TextBlock>
                         </chart:SfChart.Header>

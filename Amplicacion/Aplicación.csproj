@@ -58,6 +58,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\DynamicDataDisplay.Silverlight.dll</HintPath>
     </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\BibliotecaCristal\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\BibliotecaCristal\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Maps.MapControl, Version=1.0.1.0, Culture=neutral, PublicKeyToken=498d0d22d7936b73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Microsoft.Maps.MapControl.dll</HintPath>
@@ -71,6 +77,9 @@
     </Reference>
     <Reference Include="Syncfusion.SfChart.WPF, Version=18.3460.0.44, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
       <HintPath>..\BibliotecaCristal\packages\Syncfusion.SfChart.WPF.18.3.0.44\lib\net46\Syncfusion.SfChart.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfChart.XForms, Version=18.3451.0.44, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\BibliotecaCristal\packages\Syncfusion.Xamarin.SfChart.18.3.0.44\lib\netstandard2.0\Syncfusion.SfChart.XForms.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
