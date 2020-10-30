@@ -154,13 +154,6 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
-
-            show_grid = "temperatura";
-            TempPhaseBox.Items.Clear();
-
-            TempPhaseBox.Items.Add("Temperature");
-            TempPhaseBox.Items.Add("Phase");
-            TempPhaseBox.SelectedItem = "Temperature";
         }
 
         //Cambia el tamaño de las celdas
@@ -231,12 +224,7 @@ namespace Amplicacion
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                foreach (PruebaChart una_chart in listChart)
-                {
-                    text_save.Text = (Convert.ToString(una_chart.timeChart) + ' ' + Convert.ToString(una_chart.casillasT) + ' ' + Convert.ToString(una_chart.casillasP) + "\r\n");
-                }
-                text_save.Text += (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
-                text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 text_save.Text += (Convert.ToString(listaParametros.Count) + "\r\n");
                 foreach (Parametros para in listaParametros)
@@ -263,11 +251,10 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
-                File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-                MessageBox.Show("S'ha guardat correctament");
             }
+            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+            MessageBox.Show("S'ha guardat tot correctament");
         }
-        
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -284,12 +271,40 @@ namespace Amplicacion
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
-                int ii = 0;
 
                 while ((line = reader.ReadLine()) != null)
                 {
                     string[] trozos = line.Split(' ');
-                    if (contador == 0)
+                    if (contado == 0)
+                    {
+                        foreach (PruebaChart prueeba in listChart)
+                        {
+                            double timeChart = Convert.ToDouble(trozos[0]);
+                            double casillaasT = Convert.ToDouble(trozos[1]);
+                            double casillasP = Convert.ToDouble(trozos[2]);
+
+                            timeChart = prueeba.timeChart;
+                            casillaasT = prueeba.casillasT;
+                            casillasP = prueeba.casillasP;
+
+                        }
+                    }
+                    if (contado == 1)
+                    {
+                        int indeex = Convert.ToInt32(trozos[0]);
+                        if (indeex == 0)
+                        {
+                            show_grid = "temperatura";
+                            TempPhaseBox.SelectedItem = "Temperature";
+                        }
+                        else if (indeex == 1)
+                        {
+                            show_grid = "fase";
+                            TempPhaseBox.SelectedItem = "Phase";
+                        }
+                        else { }
+                    }
+                    if (contado == 2)
                     {
                         foreach (PruebaChart prueeba in listChart)
                         {
@@ -324,14 +339,12 @@ namespace Amplicacion
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
-
-                    if (contador == 3)
+                    if (contador == 1)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
-
-                    if (contador == 4)
+                    if (contador == 2)
                     {
                         numparametros = Convert.ToInt32(trozos[0]);
                     }
@@ -343,26 +356,14 @@ namespace Amplicacion
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-
-                    if (contador == 6)
+                    if (contador == 3)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
                     }  
-                    
-                    if (ii < (numparametros - 2) && contador > 6)
-                    {
-                        string name = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
-                        Parametros parametros = new Parametros(name, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
-                        listaParametros.Add(parametros);
-                        SetTextParametros(parametros);
-                        ListBoxParametros.Items.Add(parametros.GetName());
-                        ii++;
-                    }
-
-                    if (contador > 6 + numparametros - 2)
+                    if (contador > 3)
                     {
                         cris.GetCristal();
 
@@ -371,7 +372,7 @@ namespace Amplicacion
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetTemperature(Convert.ToDouble(trozos[2]));
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetPhase(Convert.ToDouble(trozos[3]));
                     }
-                    contador++;
+                    contado++;
                     paintInitialT();
                 }
 
@@ -792,7 +793,11 @@ namespace Amplicacion
             }
 
         }
-        
+
+
+
+
+
         public void añadirAlChart(double T, double P)
         {
             ViewModel chartE = new ViewModel();
@@ -804,9 +809,9 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
-            //seriesChartP.ItemsSource = chartE.Data;
-            //seriesChartT.ItemsSource = chartE.Data;
+            seriesChartP.ItemsSource = chartE.Data;
+            seriesChartT.ItemsSource = chartE.Data;
         }
-    }
 
+    }
 }
