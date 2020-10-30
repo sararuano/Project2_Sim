@@ -57,12 +57,20 @@ namespace BibliotecaCristal
         }
         public void SetTemperature(double Temperature)
         {
-            this.T = Temperature;
+            if (Temperature <= -1)
+                this.T = -1;
+            else
+            {
+                this.T = Temperature;
+            }
         }
 
         public void SetPhase(double Phase)
         {
-            this.phase = Phase;
+            if (Phase >= 1)
+                this.phase = 1;
+            else
+                this.phase = Phase;
         }
 
         //METHODS

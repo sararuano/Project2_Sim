@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0" 
-        xmlns:chart="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
-        xmlns:local="clr-namespace:Amplicacion"
+        xmlns:local="clr-namespace:Amplicacion" 
+        
+       
+        xmlns:chart="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="470" Width="957.333" Background="#FFCDCDCD" AutomationProperties.IsRowHeader="True">
 
@@ -21,7 +23,7 @@
             <TextBox Height="15" Text="Grid size:" TextWrapping="Wrap" Width="50" HorizontalAlignment="Left" FontSize="10" Margin="10,-15,0,0" Background="Transparent" BorderBrush="Transparent" IsEnabled="False"/>
             <Button Content="Change grid size" HorizontalAlignment="Left" Margin="10,10,0,0" Width="100" Height="20" Click="Change_Size_Button_Click_"/>
             <Rectangle Margin="0,10,0,0" Stroke="#FFB2B2B2"  />
-            
+
             <ListBox x:Name="ListBoxParametros" HorizontalAlignment="Left" Height="40" Margin="10,15,0,0" VerticalAlignment="Top" Width="100" AllowDrop="True" Grid.ColumnSpan="2" FontSize="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListBoxParametros_SelectionChanged" />
             <TextBox HorizontalAlignment="Left" Text="Selected parameters:" Height="30" Margin="115,-45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58" FontSize="10" Background="Transparent" BorderBrush="Transparent" IsEnabled="False"/>
             <TextBox x:Name="textSelectedPar" HorizontalAlignment="Left" Height="14" Margin="115,-15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" FontSize="10" />
@@ -57,16 +59,16 @@
             <ListBox x:Name="ListBoxCC" HorizontalAlignment="Right" Height="40" Margin="0,10,20,0" VerticalAlignment="Top" Width="105" AllowDrop="True" Grid.ColumnSpan="2" FontSize="9" MouseDoubleClick="ListCC_MouseDoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
             <Label x:Name="CondicionesContorno" Content="Boundary Conditions:" HorizontalAlignment="Left" Margin="0,-40,0,0" FontSize="9" Height="40" VerticalAlignment="Center" />
             <Rectangle Margin="0,10,0,0" Stroke="#FFB2B2B2"  />
-            
-            
+
+
             <Button x:Name="Put_Grain_Button" Content="PUT FIRST GRAIN"  HorizontalAlignment="Left" Height="20" Width="100" Margin="50,20,0,0" Click="Put_Grain_Button_Click" />
-            
-            
-            
+
+
+
 
             <Button x:Name="Save_Button" Content="SAVE" Margin="10,20,168,0" Click="Save_Button_Click"/>
             <Button x:Name="Load_Button" Content="LOAD" Margin="144,-20,10,0" Click="Load_Button_Click"/>
-            
+
 
         </StackPanel>
         <StackPanel x:Name="PanelCol2" Margin="0,10,10,10" Background="#FFFFFFFF" Grid.Column="1" >
@@ -94,22 +96,22 @@
                     <ColumnDefinition Width="105" />
                     <ColumnDefinition Width="40" />
                 </Grid.ColumnDefinitions>
-                
+
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Button x:Name="Step_Button" HorizontalAlignment="Left" Content="STEP"  Width="30" Height="22" FontSize="10" Grid.Column="0" Grid.Row="1" Click="Button_Click_Step"/>
                 <Button x:Name="Auto_Button" HorizontalAlignment="Left" Content="AUTO"  Width="30" Height="22" FontSize="10" Grid.Column="1" Grid.Row="1" Click="Auto_Button_Click"/>
-                <Button x:Name="Restart_Button" Content="RESTART" HorizontalAlignment="Left"  Width="45" Height="22" FontSize="10" Grid.Column="2" Grid.Row="1" Click="Restart_Button_Click"/>
+                <Button x:Name="Restart_Button" Content="RESTART" HorizontalAlignment="Left"  Width="45" Height="22" FontSize="10" Grid.Column="1" Grid.Row="1" Click="Restart_Button_Click" Grid.ColumnSpan="2" Margin="34.8,2,0,0" VerticalAlignment="Top"/>
                 <Slider x:Name="SliderVelocity" Value ="0.1" Minimum="0.1" Maximum="1" TickPlacement="BottomRight" TickFrequency="0.1"  Width="100" IsSnapToTickEnabled="True" Grid.Column="3" Grid.Row="1" ValueChanged="SliderVelocity_ValueChanged"/>
-                <Label x:Name="PeriodTimeLabel" HorizontalAlignment="Center" Content="Simulation Velocity" Grid.Column="3" Grid.Row="0" FontSize="10" />
-                
+                <Label x:Name="PeriodTimeLabel" HorizontalAlignment="Center" Content="Simulation Period" Grid.Column="3" Grid.Row="0" FontSize="10" />
+
                 <Label x:Name="step_box" HorizontalAlignment="Right" Grid.Column="4" Grid.Row="1" Content="100"/>
             </Grid>
-            
-            
-            
+
+
+
 
             <Grid HorizontalAlignment="Left" Margin="10,10,0,0" RenderTransformOrigin="-0.262,0.444">
 
@@ -132,6 +134,8 @@
                 <TextBox x:Name="labelY" Text="RowIndex:" HorizontalAlignment="Left" Height="14" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" FontSize="10"  Grid.Column="0" Grid.Row="0" BorderBrush="Transparent" Background="Transparent" IsEnabled="False"/>
                 <TextBox x:Name="labelTemp" Text="Temperature:" HorizontalAlignment="Left" Height="14" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" FontSize="10"  Grid.Column="0" Grid.Row="2" BorderBrush="Transparent" Background="Transparent" IsEnabled="False"/>
                 <TextBox x:Name="labelPhase" Text="Phase:" HorizontalAlignment="Left" Height="14" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" FontSize="10"  Grid.Column="0" Grid.Row="3" BorderBrush="Transparent" Background="Transparent" IsEnabled="False"/>
+
+
 
             </Grid>
 
@@ -177,52 +181,97 @@
             <Grid x:Name="TempIndicator" Height="200" Width="20" Margin="190,-550,0,0" >
                 <Grid.RowDefinitions></Grid.RowDefinitions>
             </Grid>
-            <TextBox x:Name="text0" Text="-1\nSolid" Height="36" Margin="275,-717,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
+            <TextBox x:Name="text0" Text="-1\nSolid" Height="36" Margin="275,-737,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
+            <TextBox x:Name="textMed" Text="" Height="18" Margin="275,-687,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36"/>
             <TextBox x:Name="text1" Text="0\nLiquid" Height="36" Margin="275,-355,20.4,0" FontSize="8" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" Width="36" HorizontalAlignment="Left"/>
 
         </StackPanel>
-        <StackPanel x:Name="PanelCol3" Grid.Column="2" Margin="0,10,10,10" Background="#FFFFFFFF">
-            <StackPanel x:Name="PanelChart" Height="250" Margin="5,10,5,0">
-                <d3:ChartPlotter Name="ChartT"></d3:ChartPlotter>
-                <!--<chart:SfChart x:Name="chartT" Margin="5,0,5,0" Height="278" >
-                    <chart:SfChart.PrimaryAxis>
-                        <chart:NumericalAxis x:Name="xAxis"/>
-                    </chart:SfChart.PrimaryAxis>
-                    <chart:SfChart.SecondaryAxis>
-                        <chart:NumericalAxis x:Name="yAxis" Maximum="1.2" Minimum="-1.2"/>
-                    </chart:SfChart.SecondaryAxis>
-                    <chart:SfChart.Legend>
-                        <chart:ChartLegend/>
-                    </chart:SfChart.Legend>
-                    <chart:LineSeries x:Name="seriesChartT" ShowTooltip="True" Label="Average temperature" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasT" ListenPropertyChange="True">
-                        <chart:LineSeries.AdornmentsInfo>
-                            <chart:ChartAdornmentInfo ShowLabel="True"/>
-                        </chart:LineSeries.AdornmentsInfo>
-                    </chart:LineSeries>
-                    <chart:LineSeries x:Name="seriesChartP" ShowTooltip="True" Label="Average phase" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasP" ListenPropertyChange="True">
-                        <chart:LineSeries.AdornmentsInfo>
-                            <chart:ChartAdornmentInfo ShowLabel="True"/>
-                        </chart:LineSeries.AdornmentsInfo>
-                    </chart:LineSeries>
+        <StackPanel x:Name="PanelCol3" Grid.Column="2" Margin="0,10,10,10" Background="White">
+            <StackPanel x:Name="PanelChart" Height="400" Margin="5,10,5,0">
+                <StackPanel x:Name="HuecoGraficos" Margin="0,5,0,5" Height="300">
+                    
+                    <!--<chart:SfChart x:Name="chartP" Margin="5,0,5,0" Height="150" >
 
-                </chart:SfChart>-->
-                <Grid x:Name="GridTPAverage" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <chart:SfChart.Header>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average phase progresion</TextBlock>
+                        </chart:SfChart.Header>
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:NumericalAxis x:Name="xAxisP"/>
+                        </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis x:Name="yAxisP" Maximum="1.1" Minimum="0.7"/>
+                        </chart:SfChart.SecondaryAxis>
+                        <chart:LineSeries x:Name="seriesChartP" ShowTooltip="True" Label="Average phase" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasP" ListenPropertyChange="True">
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo ShowLabel="True"/>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                    </chart:SfChart>
+                    <chart:SfChart x:Name="chartT" Margin="5,0,5,0" Height="150" >
+                        <chart:SfChart.Header>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average temperature progresion</TextBlock>
+                        </chart:SfChart.Header>
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:NumericalAxis x:Name="xAxisT"/>
+                        </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis x:Name="yAxisT" Maximum="-0.7" Minimum="-1.1"/>
+                        </chart:SfChart.SecondaryAxis>
+                        <chart:LineSeries x:Name="seriesChartT" ShowTooltip="True" Label="Average temperature" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasT" ListenPropertyChange="True">
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo ShowLabel="True"/>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                    </chart:SfChart>-->
+                    
+                    <!--<chart:CartesianChart x:Name="chartP" Margin="5,0,5,0" Height="150" Series="{Binding casillasP}" >
+
+                        <chart:CartesianChart.Content>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average phase progresion</TextBlock>
+                        </chart:CartesianChart.Content>
+                        <chart:CartesianChart.AxisY>
+                            <chart:Axis x:Name="YAxisP" MaxValue="1.1" MinValue="0.7"   />
+                        </chart:CartesianChart.AxisY>
+                        <chart:CartesianChart.AxisX>
+                            <chart:Axis x:Name="XAxisP"  Labels="{Binding timeChart}"  />
+                        </chart:CartesianChart.AxisX>
+                        
+                    </chart:CartesianChart>-->
+                    
+                    <!--<chart:SfChart x:Name="chartT" Margin="5,0,5,0" Height="150" >
+                        <chart:SfChart.Header>
+                            <TextBlock HorizontalAlignment="Center" FontSize="12" Margin="0,5,0,5">Average temperature progresion</TextBlock>
+                        </chart:SfChart.Header>
+                        <chart:SfChart.PrimaryAxis>
+                            <chart:NumericalAxis x:Name="xAxisT"/>
+                        </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis x:Name="yAxisT" Maximum="-0.7" Minimum="-1.1"/>
+                        </chart:SfChart.SecondaryAxis>
+                        <chart:LineSeries x:Name="seriesChartT" ShowTooltip="True" Label="Average temperature" ItemsSource="{Binding Data}" XBindingPath="timeChart" YBindingPath="casillasT" ListenPropertyChange="True">
+                            <chart:LineSeries.AdornmentsInfo>
+                                <chart:ChartAdornmentInfo ShowLabel="True"/>
+                            </chart:LineSeries.AdornmentsInfo>
+                        </chart:LineSeries>
+                    </chart:SfChart>-->
+                </StackPanel>
+
+                <Grid x:Name="GridTPAverage" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
 
                     <Grid.ColumnDefinitions >
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBox x:Name="textTaa"  HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10" Grid.Column="1" Grid.Row="0" />
-                    <TextBox x:Name="textPaa"  HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="1" Grid.Row="1" Width="40" />
-                    <TextBox x:Name="labelTaa" Text="Average Temperature:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="10"  Grid.Column="0" Grid.Row="0" BorderBrush="Transparent" Background="Transparent"  />
-                    <TextBox x:Name="labelPaa" Text="Average Phase:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="0" Grid.Row="1" BorderBrush="Transparent" Background="Transparent"  />
-
+                    <TextBox x:Name="textTa"  HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10" Grid.Column="1" Grid.Row="0" Width="40"/>
+                    <TextBox x:Name="textPa"  HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="1" Grid.Row="1" Width="40" />
+                    <TextBox x:Name="labelTaa" Text="Average Temperature:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="10"  Grid.Column="0" Grid.Row="0" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" />
+                    <TextBox x:Name="labelPaa" Text="Average Phase:" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top"  FontSize="10"  Grid.Column="0" Grid.Row="1" BorderBrush="Transparent" Background="Transparent" IsEnabled="False" />
                 </Grid>
-                
+
 
             </StackPanel>
             <DockPanel HorizontalAlignment="Left" Height="100" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top" Width="100"/>

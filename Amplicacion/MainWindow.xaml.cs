@@ -18,7 +18,15 @@ using System.Windows.Shapes;
 using BibliotecaCristal;
 using System.IO;
 using Microsoft.Win32;
+using Syncfusion;
+using Syncfusion.UI;
 using Syncfusion.UI.Xaml;
+using Syncfusion.UI.Xaml.Charts;
+using Syncfusion.SfChart.XForms;
+using DynamicDataDisplay.Markers.DataSources;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
 
 namespace Amplicacion
 {
@@ -68,7 +76,7 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
+            clock_time.Interval = new TimeSpan(1000000); //Pongo por defecto que haga un tick cada 1 segundo
 
         }
 
@@ -124,7 +132,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -142,7 +150,7 @@ namespace Amplicacion
             }
         }
 
-        //Per tornar a començar
+        //Per tornar a començar, posaa tots els valors al seu valor inicial
         private void Restart_Button_Click(object sender, RoutedEventArgs e)
         {
             //Tornem a començar el load
@@ -153,7 +161,24 @@ namespace Amplicacion
             fillNewListParametros(true, new List<Parametros>());
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+
             paintInitialT();
+
+
+            show_grid = "temperatura";
+            TempPhaseBox.Items.Clear();
+
+            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Add("Phase");
+            TempPhaseBox.SelectedItem = "Temperature";
+            textPa.Text = "";
+            textTa.Text = "";
+            textYS.Text = "";
+            textXS.Text = "";
+            textTemp.Text = "";
+            textPhase.Text = "";
+            textX.Text = "0";
+            textY.Text = "0";
         }
 
         //Cambia el tamaño de las celdas
@@ -161,11 +186,10 @@ namespace Amplicacion
         {
             try
             {
-
                 if (textGridSize.Text != "")
                 {
                     int valor = Convert.ToInt16(textGridSize.Text);
-                    if (valor % 2 == 1)
+                    if (valor % 2 == 1)                                // Se asegura de que se de un numero impar de filas ya que nuestras ecuaciones estan diseñadas para tener una casilla central
                     {
                         CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
                         pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
@@ -173,7 +197,6 @@ namespace Amplicacion
                     }
                     else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
                     textGridSize.Text = "";
-
                 }
             }
             catch (Exception exc) { MessageBox.Show(exc.Message); }
@@ -188,7 +211,7 @@ namespace Amplicacion
             paintInitialT();
         }
 
-        // Asigna un valor de temperatura a una celda concreta al presionar el boton
+        // Asigna un valor de temperatura y fase equivalente a estado solido a una celda concreta al presionar el boton, ademas de cambiarlo en la clase cristal
         private void Solidify_Button_Click(object sender, RoutedEventArgs e)
         {
             int filas = Rejilla.RowDefinitions.Count - 1;
@@ -222,9 +245,17 @@ namespace Amplicacion
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
 
+            int variable = 0;
+
             if (saveFileDialog.ShowDialog() == true)
             {
-                text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                text_save.Text = (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
+                text_save.Text += (Convert.ToString(listChart.Count) + "\r\n");
+                foreach (PruebaChart unachart in listChart)
+                {
+                    text_save.Text += (Convert.ToString(unachart.timeChart) + ' ' + Convert.ToString(unachart.casillasT) + ' ' + Convert.ToString(unachart.casillasP) + "\r\n");
+                }
+                text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 text_save.Text += (Convert.ToString(listaParametros.Count) + "\r\n");
                 foreach (Parametros para in listaParametros)
@@ -251,9 +282,10 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
+                File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+                MessageBox.Show("S'ha guardat correctament");
+                variable++;
             }
-            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-            MessageBox.Show("S'ha guardat tot correctament");
         }
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
@@ -263,33 +295,23 @@ namespace Amplicacion
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
 
+            listChart.Clear();
+
             string line;
             int numparametros = 0;
+            int numcharts = 0;
 
             if (openFileDialog.ShowDialog() == true)
             {
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
-
+                int ii = 0;
+                int iiii = 0;
                 while ((line = reader.ReadLine()) != null)
                 {
                     string[] trozos = line.Split(' ');
-                    if (contado == 0)
-                    {
-                        foreach (PruebaChart prueeba in listChart)
-                        {
-                            double timeChart = Convert.ToDouble(trozos[0]);
-                            double casillaasT = Convert.ToDouble(trozos[1]);
-                            double casillasP = Convert.ToDouble(trozos[2]);
-
-                            timeChart = prueeba.timeChart;
-                            casillaasT = prueeba.casillasT;
-                            casillasP = prueeba.casillasP;
-
-                        }
-                    }
-                    if (contado == 1)
+                    if (contador == 0)
                     {
                         int indeex = Convert.ToInt32(trozos[0]);
                         if (indeex == 0)
@@ -303,67 +325,61 @@ namespace Amplicacion
                             TempPhaseBox.SelectedItem = "Phase";
                         }
                         else { }
-                    }
-                    if (contado == 2)
-                    {
-                        foreach (PruebaChart prueeba in listChart)
-                        {
-                            double timeChart = Convert.ToDouble(trozos[0]);
-                            double casillaasT = Convert.ToDouble(trozos[1]);
-                            double casillasP = Convert.ToDouble(trozos[2]);
-                            
-                            timeChart = prueeba.timeChart;
-                            casillaasT = prueeba.casillasT;
-                            casillasP = prueeba.casillasP;
-                        }
                     }
                     if (contador == 1)
                     {
-                        int indeex = Convert.ToInt32(trozos[0]);
-                        if (indeex == 0)
-                        {
-                            show_grid = "temperatura";
-                            TempPhaseBox.SelectedItem = "Temperature";
-                        }
-                        else if (indeex == 1)
-                        {
-                            show_grid = "fase";
-                            TempPhaseBox.SelectedItem = "Phase";
-                        }
-                        else { }
+                        numcharts = Convert.ToInt32(trozos[0]);
                     }
-                    if (contador == 2)
+                    if (iiii < numcharts && contador > 1)
+                    {
+                        PruebaChart prueba = new PruebaChart { timeChart = Convert.ToDouble(trozos[0]), casillasT = Convert.ToDouble(trozos[1]), casillasP = Convert.ToDouble(trozos[2]) };
+                        listChart.Add(prueba);
+                        iiii++;
+                    }
+                    if (contador == numcharts + 2)
                     {
                         int rej = Convert.ToInt32(trozos[0]);
 
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
-                    if (contador == 1)
+                    if (contador == numcharts + 3)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
-                    if (contador == 2)
+                    if (contador == numcharts + 4)
                     {
                         numparametros = Convert.ToInt32(trozos[0]);
                     }
 
-                    if (contador == 5)
+                    if (contador == numcharts + 5)
                     {
                         string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-                    if (contador == 3)
+
+                    if (contador == numcharts + 6)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
-                    }  
-                    if (contador > 3)
+                    }
+
+                    if (ii < (numparametros - 2) && contador > (numcharts + 6))
+                    {
+                        string name = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
+                        Parametros parametros = new Parametros(name, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
+                        listaParametros.Add(parametros);
+                        SetTextParametros(parametros);
+                        ListBoxParametros.Items.Add(parametros.GetName());
+                        ii++;
+                    }
+
+                    if (contador > numcharts + 6 + numparametros - 2)
                     {
                         cris.GetCristal();
 
@@ -372,7 +388,7 @@ namespace Amplicacion
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetTemperature(Convert.ToDouble(trozos[2]));
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetPhase(Convert.ToDouble(trozos[3]));
                     }
-                    contado++;
+                    contador++;
                     paintInitialT();
                 }
 
@@ -388,10 +404,10 @@ namespace Amplicacion
                 }
             }
         }
-
+        // Selecciona las confdiciones de contorno entre las dos opciones
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string selectedCC = ListBoxCC.SelectedItem.ToString();
+            string selectedCC = ListBoxCC.SelectedItem.ToString();  
             if (selectedCC == "Constant Temperature")
             {
                 CC_temp_constant = true;
@@ -422,11 +438,11 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
-        private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)  // la funcion hace un calculo de distancio en funcion de las dimensiones de la malla y de las particiones que tiene, y determina en funcion de la osicion del raton, en que cassilla se ha clicado
         {
             double width = Convert.ToDouble(Rejilla.Width);
             int filas = Rejilla.ColumnDefinitions.Count();
@@ -502,8 +518,8 @@ namespace Amplicacion
             {
                 ListBoxParametros.Items.Add(par.GetName());
             }
-            TempPhaseBox.Items.Clear();
-            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Clear();   
+            TempPhaseBox.Items.Add("Temperature"); // Además de los pàrámetros tambien se crea las dos opciones de temperatura y phase en el menu
             TempPhaseBox.Items.Add("Phase");
 
 
@@ -525,7 +541,7 @@ namespace Amplicacion
 
         //FUNCIONES DE LA MALLA
 
-        private Grid CreateDataGridyCristal(Grid Rej, int filas)
+        private Grid CreateDataGridyCristal(Grid Rej, int filas)  // Crea la malla y la clase cristal con las mismas dimensiones 
         {
             Rej.Children.Clear();
             Rej.ColumnDefinitions.Clear();
@@ -548,119 +564,16 @@ namespace Amplicacion
 
         }
 
-        //**NO SE USA** Añade un stackpanel a cada celda del grid seleccionado y la pinta del color seleccionado
-        private Grid CreateGridPanel(Color color)
-        {
-            int filas = Rejilla.RowDefinitions.Count();
-
-            int irow = 0;
-            foreach (RowDefinition row in Rejilla.RowDefinitions)
-            {
-                int icol = 0;
-                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
-                {
-                    StackPanel pan1 = new StackPanel();
-                    Brush paint = new SolidColorBrush(color);
-
-                    pan1.Background = paint;
-
-                    pan[irow, icol] = pan1;
-
-                    Grid.SetRow(pan1, irow);
-                    Grid.SetColumn(pan1, icol);
-
-                    pan1.Margin = new Thickness(1);
-                    Rejilla.Children.Add(pan1);
-                    icol++;
-                }
-                irow++;
-
-            }
-            return Rejilla;
-        }
 
         //*********************************************************************************************************
 
         //FUNCIONES DE LA TEMPERATURA//FASE
 
-        // Creara un nuevo grid, en el que conservará los valores anteriores de la rejilla 
-        //que estan guardados en la matriz de stackpaneal llamada pan y para la fila y columna 
-        //eleccionada creara un stackpanel nuevo con la temperatura deseada
-        private void SetColorTemp(double temp, int fila, int columna)
-        {
-            int filas = Rejilla.RowDefinitions.Count();
-            fila = filas - 1 - fila;
-            Rejilla.Children.Clear();
-
-            byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-            Color colorset = Color.FromArgb(255, 255, R, 0);
-            Brush colorBrush = new SolidColorBrush(colorset);
-            int irow = 0;
-            foreach (RowDefinition row in Rejilla.RowDefinitions)
-            {
-                int icol = 0;
-                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
-                {
-                    if (columna == icol && fila == irow)
-                    {
-                        StackPanel panel = new StackPanel();
-                        panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
-                        Grid.SetRow(panel, irow);
-                        Grid.SetColumn(panel, icol);
-                        Rejilla.Children.Add(panel);
-                    }
-                    else
-                    {
-                        StackPanel panel = new StackPanel();
-                        Brush brus;
-                        if (pan[irow, icol] == null)
-                            brus = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-                        else
-                        {
-                            brus = pan[irow, icol].Background;
-                        }
-                        panel.Background = brus;
-                        panel.Visibility = Visibility.Visible;
-                        Grid.SetRow(panel, irow);
-                        Grid.SetColumn(panel, icol);
-                        Rejilla.Children.Add(panel);
-                    }
-                    icol++;
-                }
-                irow++;
-            }
-
-            // Pendiente de quitar si se pudiese
-            int iirow = 0;
-            foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
-            {
-                int iicol = 0;
-                foreach (ColumnDefinition col in HuecoRejilla.ColumnDefinitions)
-                {
-                    if (0 == iicol && 0 == iirow)
-                    {
-                        HuecoRejilla.Children.Clear();
-                        Grid.SetRow(Rejilla, iirow);
-                        Grid.SetColumn(Rejilla, iicol);
-                        HuecoRejilla.Children.Add(Rejilla);
-                    }
-                    iicol++;
-                }
-                iirow++;
-            }
-
-            cris.GetCeldaij(filas - 1 - fila, columna).SetTemperature(temp);
-        }
-
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura/fase a las celdas 
         private void paintInitialT()
         {
             int filas = Rejilla.RowDefinitions.Count();
-
             Rejilla.Children.Clear();
-
-
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
@@ -670,17 +583,37 @@ namespace Amplicacion
                     if (show_grid == "temperatura")
                     {
                         double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                        
                         if (temp < -1)
                         {
                             temp = -1;
                         }
-                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-                        Color colorset = Color.FromArgb(255, 255, R, 0);
-                        Brush colorBrush = new SolidColorBrush(colorset);
-
+                        byte A;
+                        if (filas > 14)
+                        {
+                            if (temp > -0.99)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-100 * temp - 99) * 255, 0));
+                        }
+                        else if (filas>7)
+                        {
+                            if (temp > -0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-20 * temp - 19) * 255, 0));
+                        }
+                        else 
+                        {
+                            if (temp > -0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-10 * temp - 9) * 255, 0));
+                        }
+                        Color colorset = Color.FromArgb(A, 255, 255, 0);
+                        Brush colorBrush = new SolidColorBrush(colorset);      // El color de cada casilla se define por un panel 
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
                         Grid.SetRow(panel, filas - 1 - irow);
                         Grid.SetColumn(panel, icol);
                         Rejilla.Children.Add(panel);
@@ -692,13 +625,26 @@ namespace Amplicacion
                         //{
                         //    phase = 1;
                         //}
-                        byte R = Convert.ToByte(Math.Round(phase * 255, 0));
-                        Color colorset = Color.FromArgb(255, 0, R, 255);
+                        byte A;
+                        if (filas > 14)
+                        {
+                            if (phase < 0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((20 * phase -19) * 255, 0));
+                        }
+                        else 
+                        {
+                            if (phase < 0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((10 * phase - 9) * 255, 0));
+                        }
+                        
+                        Color colorset = Color.FromArgb(A, 0, 255, 255);
                         Brush colorBrush = new SolidColorBrush(colorset);
-
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
                         Grid.SetRow(panel, filas - 1 - irow);
                         Grid.SetColumn(panel, icol);
                         Rejilla.Children.Add(panel);
@@ -707,8 +653,7 @@ namespace Amplicacion
                 }
                 irow++;
             }
-
-            // Pendiente de quitar si se pudiese
+            // Col el resto de esta funciuon nos aseguramos que noestra malla aparezca en pantalla introduciendolo en un grid filjo
             int iirow = 0;
             foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
             {
@@ -732,29 +677,94 @@ namespace Amplicacion
         private void createTempIndicator(int filas)
         {
             TempIndicator.Children.Clear();
-            int contar = TempIndicator.RowDefinitions.Count();
+            int contar = TempIndicator.RowDefinitions.Count(); 
             int count = 0;
+            int filasG = Rejilla.RowDefinitions.Count();
+            if (filasG == 0)
+                filasG = 15;
             if (TempIndicator.RowDefinitions.Count() > 0)
             { }
             else
             {
                 while (count < filas)
                 {
-                    TempIndicator.RowDefinitions.Add(new RowDefinition());
+                    TempIndicator.RowDefinitions.Add(new RowDefinition());  // Creamos una cantidad de filas introducida en pantalla, pero el if anterior nos indica que solo se creara una vez 
                     count++;
                 }
             }
+
             count = 0;
             if (show_grid == "temperatura")
             {
-                double temp = 0;
-                foreach (RowDefinition row in TempIndicator.RowDefinitions)
+                Double filasD = Convert.ToDouble(filas);
+                double a = filasD;
+                double temp;
+                if (filasG>14)
+                {
+                    a = (filasD - 10) / (0.99 - 1);
+                    textMed.Text = (-0.99).ToString();
+                    temp = -0.99;
+                }
+                else if (filasG>7)
+                {
+                    a = (filasD - 10) / (0.95 - 1);
+                    textMed.Text = (-0.95).ToString();
+                    temp = -0.95;
+                }
+                else
+                {
+                    a = (filasD - 10) / (0.9 - 1);
+                    textMed.Text = (-0.9).ToString();
+                    temp = -0.9;
+                }
+                
+                foreach (RowDefinition row in TempIndicator.RowDefinitions) // La temperatura empezará en 0 para acabar en -1 habiendo recorrido toda la gama del espectro rojo - amarillo
                 {
                     contar = TempIndicator.RowDefinitions.Count();
-                    Double filasD = Convert.ToDouble(filas);
-                    StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
-                    Color colorset = Color.FromArgb(255, 255, R, 0);
+                    
+                    StackPanel panel = new StackPanel();                 // La gama de colores se crea con una variedad progresiva de stack panels
+                    byte A;
+                    
+                    if (count > 10)
+                    {
+                        if (filasG > 14)
+                        {
+                            if (temp > -0.99)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                            {
+                                A = Convert.ToByte(Math.Round((-100 * temp - 99) * 255, 0));
+                                
+                            }
+                        }
+                        else if (filasG > 7)
+                        {
+                            if (temp > -0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                            {
+                                A = Convert.ToByte(Math.Round((-20 * temp - 19) * 255, 0));
+                                
+
+                            }
+                        }
+                        else
+                        {
+                            if (temp > -0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                            {
+                                A = Convert.ToByte(Math.Round((-10 * temp - 9) * 255, 0));
+                                
+                            }
+                        }
+                    }
+                    else
+                    {
+                        A = Convert.ToByte(0);
+                        
+                    }
+                    Color colorset = Color.FromArgb(A, 255,255, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
                     if (TempIndicator.Children != null)
@@ -763,21 +773,63 @@ namespace Amplicacion
                     }
                     else { }
                     count++;
-                    temp = temp - 1 / filasD;
+                    if (count > 11)
+                    {
+                        temp = temp + 1 / a;
+                    }
                 }
-                text0.Text = "-1 \nLiquid";
-                text1.Text = "0 \nSolid";
+                text0.Text = "0 \nSolid";
+                text1.Text = "-1 \nLiquid";
             }
-            else if (show_grid == "fase")
+            else if (show_grid == "fase") // Analogamente a la te,peratura sucede con la fase
             {
-                double fase = 0;
+                Double filasD = Convert.ToDouble(filas);
+                double a;
+                double phase;
+                if (filasG >14)
+                {
+                    a = (filasD - 10) / (1 - 0.95);
+                    textMed.Text = (0.95).ToString();
+                    phase = 0.95;
+                }
+                else
+                {
+                    a = (filasD - 10) / (1 - 0.9);
+                    textMed.Text = (0.9).ToString();
+                    phase = 0.9;
+                }
                 foreach (RowDefinition row in TempIndicator.RowDefinitions)
                 {
                     contar = TempIndicator.RowDefinitions.Count();
-                    Double filasD = Convert.ToDouble(filas);
+                    
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255 - fase * 255, 0));
-                    Color colorset = Color.FromArgb(255, 0, R, 255);
+                    byte A;
+                    
+                    if (count > 10)
+                    {
+                        if (filasG > 14)
+                        {
+                            if (phase < 0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                            {
+                                A = Convert.ToByte(Math.Round((20 * phase - 19) * 255, 0));
+                            }
+                        }
+                        else
+                        {
+                            if (phase < 0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                            {
+                                A = Convert.ToByte(Math.Round((10 * phase - 9) * 255, 0));
+                            }
+                        }
+                    }
+                    else
+                        A = Convert.ToByte(0);
+                    
+                    Color colorset = Color.FromArgb(A, 0, 255, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
                     if (TempIndicator.Children != null)
@@ -786,10 +838,13 @@ namespace Amplicacion
                     }
                     else { }
                     count++;
-                    fase = fase + 1 / filasD;
+                    if (count > 11)
+                    {
+                        phase = phase + 1 / a;
+                    }
                 }
-                text0.Text = "1\nLiquid";
-                text1.Text = "0\nSolid";
+                text0.Text = "0\nSolid";
+                text1.Text = "1\nLiquid";
             }
 
         }
@@ -809,8 +864,11 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
-            seriesChartP.ItemsSource = chartE.Data;
-            seriesChartT.ItemsSource = chartE.Data;
+            
+
+            textTa.Text = Math.Round(T,4).ToString();
+            textPa.Text = Math.Round(P,4).ToString();
+
         }
 
     }
