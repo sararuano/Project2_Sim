@@ -28,7 +28,7 @@ namespace Amplicacion
     public partial class MainWindow : Window
     {
         Cristal cris;
-        
+
         int steps;
         DispatcherTimer clock_time = new DispatcherTimer();
         List<Parametros> listaParametros;
@@ -79,14 +79,20 @@ namespace Amplicacion
 
         private void ListBoxParametros_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string selectedParametro = ListBoxParametros.SelectedItem.ToString();
-            foreach (Parametros par in listaParametros)
+            if (ListBoxParametros.Items.Count == 0)
             {
-                if (par.GetName() == selectedParametro)
+            }
+            else
+            {
+                string selectedParametro = ListBoxParametros.SelectedItem.ToString();
+                foreach (Parametros par in listaParametros)
                 {
-                    //Select new Par
-                    selectedParametros = par;
-                    SetTextParametros(par);
+                    if (par.GetName() == selectedParametro)
+                    {
+                        //Select new Par
+                        selectedParametros = par;
+                        SetTextParametros(par);
+                    }
                 }
             }
         }
@@ -150,28 +156,34 @@ namespace Amplicacion
             paintInitialT();
 
             show_grid = "temperatura";
+            TempPhaseBox.Items.Clear();
+
+            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Add("Phase");
             TempPhaseBox.SelectedItem = "Temperature";
-            TempPhaseBox.Items.Remove("Temperature");
-            TempPhaseBox.Items.Remove("Phase");
-            
         }
 
         //Cambia el tamaño de las celdas
         private void Change_Size_Button_Click_(object sender, RoutedEventArgs e)
         {
-            if (textGridSize.Text != "")
+            try
             {
-                int valor = Convert.ToInt16(textGridSize.Text);
-                if (valor % 2 == 1)
-                {
-                    CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
-                    pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
-                    paintInitialT();
-                }
-                else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
-                textGridSize.Text = "";
 
+                if (textGridSize.Text != "")
+                {
+                    int valor = Convert.ToInt16(textGridSize.Text);
+                    if (valor % 2 == 1)
+                    {
+                        CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
+                        pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
+                        paintInitialT();
+                    }
+                    else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
+                    textGridSize.Text = "";
+
+                }
             }
+            catch (Exception exc) { MessageBox.Show(exc.Message); }
         }
 
         //Solidifica la celda del medio
@@ -211,9 +223,9 @@ namespace Amplicacion
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.FileName = "";
-            saveFileDialog.Title = "Save text Files";
+            saveFileDialog.Title = "Save Text Files";
             saveFileDialog.DefaultExt = "txt";
-            saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog.Filter = "Text files (.txt)|.txt|All files (.)|.";
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
 
@@ -226,9 +238,10 @@ namespace Amplicacion
                 text_save.Text += (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
                 text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
+                text_save.Text += (Convert.ToString(listaParametros.Count) + "\r\n");
                 foreach (Parametros para in listaParametros)
                 {
-                    text_save.Text += (para.GetName() +' '+ para.GetEpsilon() +' '+ para.Getm() + ' ' + para.GetDelta()+ ' ' + para.GetAlpha() + "\r\n");
+                    text_save.Text += (para.GetName() + ' ' + para.GetEpsilon() + ' ' + para.Getm() + ' ' + para.GetDelta() + ' ' + para.GetAlpha() + "\r\n");
                 }
 
                 int iiirow = 0;
@@ -251,26 +264,30 @@ namespace Amplicacion
                     iiirow++;
                 }
                 File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-                MessageBox.Show("S'ha guardat tot correctament");
+                MessageBox.Show("S'ha guardat correctament");
             }
         }
+        
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.Filter = "txt files (.txt)|.txt|All files (.)|.";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
 
             string line;
+            int numparametros = 0;
+
             if (openFileDialog.ShowDialog() == true)
             {
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
+                int ii = 0;
 
-                while ((line = reader.ReadLine()) != null)  
-                { 
+                while ((line = reader.ReadLine()) != null)
+                {
                     string[] trozos = line.Split(' ');
                     if (contador == 0)
                     {
@@ -279,6 +296,7 @@ namespace Amplicacion
                             double timeChart = Convert.ToDouble(trozos[0]);
                             double casillaasT = Convert.ToDouble(trozos[1]);
                             double casillasP = Convert.ToDouble(trozos[2]);
+                            
                             timeChart = prueeba.timeChart;
                             casillaasT = prueeba.casillasT;
                             casillasP = prueeba.casillasP;
@@ -306,26 +324,45 @@ namespace Amplicacion
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
+
                     if (contador == 3)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
+
                     if (contador == 4)
+                    {
+                        numparametros = Convert.ToInt32(trozos[0]);
+                    }
+
+                    if (contador == 5)
                     {
                         string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-                    if (contador == 5)
+
+                    if (contador == 6)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
                     }  
-                    if (contador > 5)
+                    
+                    if (ii < (numparametros - 2) && contador > 6)
+                    {
+                        string name = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
+                        Parametros parametros = new Parametros(name, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
+                        listaParametros.Add(parametros);
+                        SetTextParametros(parametros);
+                        ListBoxParametros.Items.Add(parametros.GetName());
+                        ii++;
+                    }
+
+                    if (contador > 6 + numparametros - 2)
                     {
                         cris.GetCristal();
 
@@ -428,10 +465,10 @@ namespace Amplicacion
         //Cambia el valor del periodo entre steps
         private void SliderVelocity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            double periodo = SliderVelocity.Value* 10000000;        //Se multiplica este factor porque el intervalo del reloj se mide en cientos de nanosegundos
-            
+            double periodo = SliderVelocity.Value * 10000000;        //Se multiplica este factor porque el intervalo del reloj se mide en cientos de nanosegundos
+
             clock_time.Interval = new TimeSpan((long)periodo);
-            
+
         }
 
         //**VACÍA**
@@ -464,6 +501,7 @@ namespace Amplicacion
             {
                 ListBoxParametros.Items.Add(par.GetName());
             }
+            TempPhaseBox.Items.Clear();
             TempPhaseBox.Items.Add("Temperature");
             TempPhaseBox.Items.Add("Phase");
 
@@ -693,7 +731,7 @@ namespace Amplicacion
         private void createTempIndicator(int filas)
         {
             TempIndicator.Children.Clear();
-            int contar=TempIndicator.RowDefinitions.Count();
+            int contar = TempIndicator.RowDefinitions.Count();
             int count = 0;
             if (TempIndicator.RowDefinitions.Count() > 0)
             { }
@@ -714,7 +752,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255+temp * 255, 0));
+                    byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -737,7 +775,7 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255-fase * 255, 0));
+                    byte R = Convert.ToByte(Math.Round(255 - fase * 255, 0));
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
@@ -747,14 +785,14 @@ namespace Amplicacion
                     }
                     else { }
                     count++;
-                    fase = fase + 1/filasD;
+                    fase = fase + 1 / filasD;
                 }
                 text0.Text = "1\nLiquid";
                 text1.Text = "0\nSolid";
             }
 
         }
-
+        
         public void añadirAlChart(double T, double P)
         {
             ViewModel chartE = new ViewModel();
@@ -770,4 +808,5 @@ namespace Amplicacion
             //seriesChartT.ItemsSource = chartE.Data;
         }
     }
+
 }
