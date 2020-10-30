@@ -36,7 +36,7 @@ namespace Amplicacion
         bool CC_temp_constant;     //determinará las condiciones de contorno (true=temperatura constante ; true=contorno reflector)
         string show_grid;          //determinará qué malla aparece, temperatura o fase
         StackPanel[,] pan;
-        ViewModel chartE;
+        //ViewModel chartE;
         List<PruebaChart> listChart;
 
 
@@ -62,7 +62,6 @@ namespace Amplicacion
             // Sobre el chart
             listChart = new List<PruebaChart>();
             listChart.Add(new PruebaChart { timeChart = 1, casillasT = 0, casillasP = 0 });
-
 
 
             paintInitialT();
@@ -220,7 +219,6 @@ namespace Amplicacion
 
         }
 
-
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -233,9 +231,9 @@ namespace Amplicacion
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                foreach (PruebaChart unachart in listChart)
+                foreach (PruebaChart una_chart in listChart)
                 {
-                    text_save.Text = (Convert.ToString(unachart.timeChart) + ' ' + Convert.ToString(unachart.casillasT) + ' ' + Convert.ToString(unachart.casillasP) + "\r\n");
+                    text_save.Text = (Convert.ToString(una_chart.timeChart) + ' ' + Convert.ToString(una_chart.casillasT) + ' ' + Convert.ToString(una_chart.casillasP) + "\r\n");
                 }
                 text_save.Text += (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
                 text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
@@ -298,27 +296,11 @@ namespace Amplicacion
                             double timeChart = Convert.ToDouble(trozos[0]);
                             double casillaasT = Convert.ToDouble(trozos[1]);
                             double casillasP = Convert.ToDouble(trozos[2]);
-
+                            
                             timeChart = prueeba.timeChart;
                             casillaasT = prueeba.casillasT;
                             casillasP = prueeba.casillasP;
-
                         }
-                    }
-                    if (contador == 1)
-                    {
-                        int indeex = Convert.ToInt32(trozos[0]);
-                        if (indeex == 0)
-                        {
-                            show_grid = "temperatura";
-                            TempPhaseBox.SelectedItem = "Temperature";
-                        }
-                        else if (indeex == 1)
-                        {
-                            show_grid = "fase";
-                            TempPhaseBox.SelectedItem = "Phase";
-                        }
-                        else { }
                     }
                     if (contador == 1)
                     {
@@ -368,8 +350,8 @@ namespace Amplicacion
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
-                    }
-
+                    }  
+                    
                     if (ii < (numparametros - 2) && contador > 6)
                     {
                         string name = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
@@ -774,7 +756,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     temp = temp - 1 / filasD;
                 }
@@ -793,7 +779,11 @@ namespace Amplicacion
                     Color colorset = Color.FromArgb(255, 0, R, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
-                    TempIndicator.Children.Add(panel);
+                    if (TempIndicator.Children != null)
+                    {
+                        TempIndicator.Children.Add(panel);
+                    }
+                    else { }
                     count++;
                     fase = fase + 1 / filasD;
                 }
@@ -802,26 +792,21 @@ namespace Amplicacion
             }
 
         }
-
-
-
-
-
-        //public void añadirAlChart(double T, double P)
-        //{
-        //    ViewModel chartE = new ViewModel();
-        //    foreach (PruebaChart element in listChart)
-        //    {
-        //        chartE.Data.Add(element);
-        //    }
-        //    double count = listChart.Count();
-        //    PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
-        //    chartE.Data.Add(newPoint);
-        //    listChart.Add(newPoint);
-        //    seriesChartP.ItemsSource = chartE.Data;
-        //    seriesChartT.ItemsSource = chartE.Data;
-        //}
-
+        
+        public void añadirAlChart(double T, double P)
+        {
+            ViewModel chartE = new ViewModel();
+            foreach (PruebaChart element in listChart)
+            {
+                chartE.Data.Add(element);
+            }
+            double count = listChart.Count();
+            PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
+            chartE.Data.Add(newPoint);
+            listChart.Add(newPoint);
+            //seriesChartP.ItemsSource = chartE.Data;
+            //seriesChartT.ItemsSource = chartE.Data;
+        }
     }
 
 }

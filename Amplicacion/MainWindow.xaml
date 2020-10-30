@@ -6,7 +6,9 @@
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0" 
         xmlns:chart="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
         xmlns:local="clr-namespace:Amplicacion"
-        Title="MainWindow" Height="470" Width="1101.333" Background="#FFCDCDCD" AutomationProperties.IsRowHeader="True">
+        mc:Ignorable="d"
+        Title="MainWindow" Height="470" Width="957.333" Background="#FFCDCDCD" AutomationProperties.IsRowHeader="True">
+
 
     <Grid x:Name="MainWind" Margin="5,5,5,5">
         <Grid.ColumnDefinitions>
@@ -231,8 +233,6 @@
 
 
     </Grid>
-
-
 
 
 
