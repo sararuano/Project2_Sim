@@ -19,6 +19,7 @@ using BibliotecaCristal;
 using System.IO;
 using Microsoft.Win32;
 using Syncfusion.UI.Xaml;
+using DynamicDataDisplay.Markers.DataSources;
 
 namespace Amplicacion
 {
@@ -124,7 +125,7 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         //Cuando se clica en AUTO, el timer se enciende, cuando se vuelve a clicar, se para
@@ -142,7 +143,7 @@ namespace Amplicacion
             }
         }
 
-        //Per tornar a començar
+        //Per tornar a començar, posaa tots els valors al seu valor inicial
         private void Restart_Button_Click(object sender, RoutedEventArgs e)
         {
             //Tornem a començar el load
@@ -154,6 +155,19 @@ namespace Amplicacion
             CreateDataGridyCristal(Rejilla, 15);
             pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
             paintInitialT();
+
+
+            show_grid = "temperatura";
+            TempPhaseBox.Items.Clear();
+
+            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Add("Phase");
+            TempPhaseBox.SelectedItem = "Temperature";
+            textPa.Text = "";
+            textTa.Text = "";
+            textYS.Text = "";
+            textXS.Text = "";
+
         }
 
         //Cambia el tamaño de las celdas
@@ -161,11 +175,10 @@ namespace Amplicacion
         {
             try
             {
-
                 if (textGridSize.Text != "")
                 {
                     int valor = Convert.ToInt16(textGridSize.Text);
-                    if (valor % 2 == 1)
+                    if (valor % 2 == 1)                                // Se asegura de que se de un numero impar de filas ya que nuestras ecuaciones estan diseñadas para tener una casilla central
                     {
                         CreateDataGridyCristal(Rejilla, Convert.ToInt16(textGridSize.Text));
                         pan = new StackPanel[Rejilla.RowDefinitions.Count(), Rejilla.RowDefinitions.Count()];
@@ -173,7 +186,6 @@ namespace Amplicacion
                     }
                     else { MessageBox.Show("Para poder asegurar la simetría del cristal las dimensiones tienen que ser impares."); }
                     textGridSize.Text = "";
-
                 }
             }
             catch (Exception exc) { MessageBox.Show(exc.Message); }
@@ -188,7 +200,7 @@ namespace Amplicacion
             paintInitialT();
         }
 
-        // Asigna un valor de temperatura a una celda concreta al presionar el boton
+        // Asigna un valor de temperatura y fase equivalente a estado solido a una celda concreta al presionar el boton, ademas de cambiarlo en la clase cristal
         private void Solidify_Button_Click(object sender, RoutedEventArgs e)
         {
             int filas = Rejilla.RowDefinitions.Count - 1;
@@ -388,10 +400,10 @@ namespace Amplicacion
                 }
             }
         }
-
+        // Selecciona las confdiciones de contorno entre las dos opciones
         private void ListCC_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string selectedCC = ListBoxCC.SelectedItem.ToString();
+            string selectedCC = ListBoxCC.SelectedItem.ToString();  
             if (selectedCC == "Constant Temperature")
             {
                 CC_temp_constant = true;
@@ -422,11 +434,11 @@ namespace Amplicacion
             double delta = selectedParametros.GetDelta();
             cris.NextDay(eps, m, alpha, delta, CC_temp_constant);
             paintInitialT();
-            //añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
+            añadirAlChart(cris.CalulateAverageT(), cris.CalulateAverageP());
         }
 
         // Escribe los índices de la celda clicada
-        private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Rejilla_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)  // la funcion hace un calculo de distancio en funcion de las dimensiones de la malla y de las particiones que tiene, y determina en funcion de la osicion del raton, en que cassilla se ha clicado
         {
             double width = Convert.ToDouble(Rejilla.Width);
             int filas = Rejilla.ColumnDefinitions.Count();
@@ -502,8 +514,8 @@ namespace Amplicacion
             {
                 ListBoxParametros.Items.Add(par.GetName());
             }
-            TempPhaseBox.Items.Clear();
-            TempPhaseBox.Items.Add("Temperature");
+            TempPhaseBox.Items.Clear();   
+            TempPhaseBox.Items.Add("Temperature"); // Además de los pàrámetros tambien se crea las dos opciones de temperatura y phase en el menu
             TempPhaseBox.Items.Add("Phase");
 
 
@@ -525,7 +537,7 @@ namespace Amplicacion
 
         //FUNCIONES DE LA MALLA
 
-        private Grid CreateDataGridyCristal(Grid Rej, int filas)
+        private Grid CreateDataGridyCristal(Grid Rej, int filas)  // Crea la malla y la clase cristal con las mismas dimensiones 
         {
             Rej.Children.Clear();
             Rej.ColumnDefinitions.Clear();
@@ -548,119 +560,16 @@ namespace Amplicacion
 
         }
 
-        //**NO SE USA** Añade un stackpanel a cada celda del grid seleccionado y la pinta del color seleccionado
-        private Grid CreateGridPanel(Color color)
-        {
-            int filas = Rejilla.RowDefinitions.Count();
-
-            int irow = 0;
-            foreach (RowDefinition row in Rejilla.RowDefinitions)
-            {
-                int icol = 0;
-                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
-                {
-                    StackPanel pan1 = new StackPanel();
-                    Brush paint = new SolidColorBrush(color);
-
-                    pan1.Background = paint;
-
-                    pan[irow, icol] = pan1;
-
-                    Grid.SetRow(pan1, irow);
-                    Grid.SetColumn(pan1, icol);
-
-                    pan1.Margin = new Thickness(1);
-                    Rejilla.Children.Add(pan1);
-                    icol++;
-                }
-                irow++;
-
-            }
-            return Rejilla;
-        }
 
         //*********************************************************************************************************
 
         //FUNCIONES DE LA TEMPERATURA//FASE
 
-        // Creara un nuevo grid, en el que conservará los valores anteriores de la rejilla 
-        //que estan guardados en la matriz de stackpaneal llamada pan y para la fila y columna 
-        //eleccionada creara un stackpanel nuevo con la temperatura deseada
-        private void SetColorTemp(double temp, int fila, int columna)
-        {
-            int filas = Rejilla.RowDefinitions.Count();
-            fila = filas - 1 - fila;
-            Rejilla.Children.Clear();
-
-            byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
-            Color colorset = Color.FromArgb(255, 255, R, 0);
-            Brush colorBrush = new SolidColorBrush(colorset);
-            int irow = 0;
-            foreach (RowDefinition row in Rejilla.RowDefinitions)
-            {
-                int icol = 0;
-                foreach (ColumnDefinition col in Rejilla.ColumnDefinitions)
-                {
-                    if (columna == icol && fila == irow)
-                    {
-                        StackPanel panel = new StackPanel();
-                        panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
-                        Grid.SetRow(panel, irow);
-                        Grid.SetColumn(panel, icol);
-                        Rejilla.Children.Add(panel);
-                    }
-                    else
-                    {
-                        StackPanel panel = new StackPanel();
-                        Brush brus;
-                        if (pan[irow, icol] == null)
-                            brus = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-                        else
-                        {
-                            brus = pan[irow, icol].Background;
-                        }
-                        panel.Background = brus;
-                        panel.Visibility = Visibility.Visible;
-                        Grid.SetRow(panel, irow);
-                        Grid.SetColumn(panel, icol);
-                        Rejilla.Children.Add(panel);
-                    }
-                    icol++;
-                }
-                irow++;
-            }
-
-            // Pendiente de quitar si se pudiese
-            int iirow = 0;
-            foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
-            {
-                int iicol = 0;
-                foreach (ColumnDefinition col in HuecoRejilla.ColumnDefinitions)
-                {
-                    if (0 == iicol && 0 == iirow)
-                    {
-                        HuecoRejilla.Children.Clear();
-                        Grid.SetRow(Rejilla, iirow);
-                        Grid.SetColumn(Rejilla, iicol);
-                        HuecoRejilla.Children.Add(Rejilla);
-                    }
-                    iicol++;
-                }
-                iirow++;
-            }
-
-            cris.GetCeldaij(filas - 1 - fila, columna).SetTemperature(temp);
-        }
-
         //Barre todos los valores de la matriz cristal y pone el color de la temperatura/fase a las celdas 
         private void paintInitialT()
         {
             int filas = Rejilla.RowDefinitions.Count();
-
             Rejilla.Children.Clear();
-
-
             int irow = 0;
             foreach (RowDefinition row in Rejilla.RowDefinitions)
             {
@@ -674,13 +583,11 @@ namespace Amplicacion
                         {
                             temp = -1;
                         }
-                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0));
+                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0)); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
                         Color colorset = Color.FromArgb(255, 255, R, 0);
-                        Brush colorBrush = new SolidColorBrush(colorset);
-
+                        Brush colorBrush = new SolidColorBrush(colorset);      // El color de cada casilla se define por un panel 
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
                         Grid.SetRow(panel, filas - 1 - irow);
                         Grid.SetColumn(panel, icol);
                         Rejilla.Children.Add(panel);
@@ -695,10 +602,8 @@ namespace Amplicacion
                         byte R = Convert.ToByte(Math.Round(phase * 255, 0));
                         Color colorset = Color.FromArgb(255, 0, R, 255);
                         Brush colorBrush = new SolidColorBrush(colorset);
-
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
-                        pan[irow, icol] = panel;
                         Grid.SetRow(panel, filas - 1 - irow);
                         Grid.SetColumn(panel, icol);
                         Rejilla.Children.Add(panel);
@@ -707,8 +612,7 @@ namespace Amplicacion
                 }
                 irow++;
             }
-
-            // Pendiente de quitar si se pudiese
+            // Col el resto de esta funciuon nos aseguramos que noestra malla aparezca en pantalla introduciendolo en un grid filjo
             int iirow = 0;
             foreach (RowDefinition row in HuecoRejilla.RowDefinitions)
             {
@@ -732,7 +636,7 @@ namespace Amplicacion
         private void createTempIndicator(int filas)
         {
             TempIndicator.Children.Clear();
-            int contar = TempIndicator.RowDefinitions.Count();
+            int contar = TempIndicator.RowDefinitions.Count(); 
             int count = 0;
             if (TempIndicator.RowDefinitions.Count() > 0)
             { }
@@ -740,7 +644,7 @@ namespace Amplicacion
             {
                 while (count < filas)
                 {
-                    TempIndicator.RowDefinitions.Add(new RowDefinition());
+                    TempIndicator.RowDefinitions.Add(new RowDefinition());  // Creamos una cantidad de filas introducida en pantalla, pero el if anterior nos indica que solo se creara una vez 
                     count++;
                 }
             }
@@ -748,11 +652,11 @@ namespace Amplicacion
             if (show_grid == "temperatura")
             {
                 double temp = 0;
-                foreach (RowDefinition row in TempIndicator.RowDefinitions)
+                foreach (RowDefinition row in TempIndicator.RowDefinitions) // La temperatura empezará en 0 para acabar en -1 habiendo recorrido toda la gama del espectro rojo - amarillo
                 {
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
-                    StackPanel panel = new StackPanel();
+                    StackPanel panel = new StackPanel();                 // La gama de colores se crea con una variedad progresiva de stack panels
                     byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
                     Color colorset = Color.FromArgb(255, 255, R, 0);
                     panel.Background = new SolidColorBrush(colorset);
@@ -768,7 +672,7 @@ namespace Amplicacion
                 text0.Text = "-1 \nLiquid";
                 text1.Text = "0 \nSolid";
             }
-            else if (show_grid == "fase")
+            else if (show_grid == "fase") // Analogamente a la te,peratura sucede con la fase
             {
                 double fase = 0;
                 foreach (RowDefinition row in TempIndicator.RowDefinitions)
@@ -809,8 +713,15 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
+<<<<<<< HEAD
+            textTa.Text = T.ToString();
+            textPa.Text = P.ToString();
+            //seriesChartP.ItemsSource = chartE.Data;
+            //seriesChartT.ItemsSource = chartE.Data;
+=======
             seriesChartP.ItemsSource = chartE.Data;
             seriesChartT.ItemsSource = chartE.Data;
+>>>>>>> 8bbacd5cd0f49e8361374ff6a04c7e0c4bfd9269
         }
 
     }
