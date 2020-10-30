@@ -69,7 +69,7 @@ namespace Amplicacion
 
             clock_time = new DispatcherTimer();
             clock_time.Tick += new EventHandler(clock_time_Tick);
-            clock_time.Interval = new TimeSpan(10000000); //Pongo por defecto que haga un tick cada 1 segundo
+            clock_time.Interval = new TimeSpan(1000000); //Pongo por defecto que haga un tick cada 1 segundo
 
         }
 
@@ -167,7 +167,10 @@ namespace Amplicacion
             textTa.Text = "";
             textYS.Text = "";
             textXS.Text = "";
-
+            textTemp.Text = "";
+            textPhase.Text = "";
+            textX.Text = "0";
+            textY.Text = "0";
         }
 
         //Cambia el tamaño de las celdas
@@ -234,9 +237,17 @@ namespace Amplicacion
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
 
+            int variable = 0;
+
             if (saveFileDialog.ShowDialog() == true)
             {
-                text_save.Text = (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
+                text_save.Text = (Convert.ToString(TempPhaseBox.SelectedIndex) + "\r\n");
+                text_save.Text += (Convert.ToString(listChart.Count) + "\r\n");
+                foreach (PruebaChart unachart in listChart)
+                {
+                    text_save.Text += (Convert.ToString(unachart.timeChart) + ' ' + Convert.ToString(unachart.casillasT) + ' ' + Convert.ToString(unachart.casillasP) + "\r\n");
+                }
+                text_save.Text += (Convert.ToString(Rejilla.RowDefinitions.Count()) + "\r\n");
                 text_save.Text += (Convert.ToString(steps) + "\r\n");
                 text_save.Text += (Convert.ToString(listaParametros.Count) + "\r\n");
                 foreach (Parametros para in listaParametros)
@@ -263,9 +274,10 @@ namespace Amplicacion
                     }
                     iiirow++;
                 }
+                File.WriteAllText(saveFileDialog.FileName, text_save.Text);
+                MessageBox.Show("S'ha guardat correctament");
+                variable++;
             }
-            File.WriteAllText(saveFileDialog.FileName, text_save.Text);
-            MessageBox.Show("S'ha guardat tot correctament");
         }
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
@@ -275,33 +287,23 @@ namespace Amplicacion
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
 
+            listChart.Clear();
+
             string line;
             int numparametros = 0;
+            int numcharts = 0;
 
             if (openFileDialog.ShowDialog() == true)
             {
                 var fileStream = openFileDialog.OpenFile();
                 StreamReader reader = new StreamReader(fileStream);
                 int contador = 0;
-
+                int ii = 0;
+                int iiii = 0;
                 while ((line = reader.ReadLine()) != null)
                 {
                     string[] trozos = line.Split(' ');
-                    if (contado == 0)
-                    {
-                        foreach (PruebaChart prueeba in listChart)
-                        {
-                            double timeChart = Convert.ToDouble(trozos[0]);
-                            double casillaasT = Convert.ToDouble(trozos[1]);
-                            double casillasP = Convert.ToDouble(trozos[2]);
-
-                            timeChart = prueeba.timeChart;
-                            casillaasT = prueeba.casillasT;
-                            casillasP = prueeba.casillasP;
-
-                        }
-                    }
-                    if (contado == 1)
+                    if (contador == 0)
                     {
                         int indeex = Convert.ToInt32(trozos[0]);
                         if (indeex == 0)
@@ -315,67 +317,61 @@ namespace Amplicacion
                             TempPhaseBox.SelectedItem = "Phase";
                         }
                         else { }
-                    }
-                    if (contado == 2)
-                    {
-                        foreach (PruebaChart prueeba in listChart)
-                        {
-                            double timeChart = Convert.ToDouble(trozos[0]);
-                            double casillaasT = Convert.ToDouble(trozos[1]);
-                            double casillasP = Convert.ToDouble(trozos[2]);
-                            
-                            timeChart = prueeba.timeChart;
-                            casillaasT = prueeba.casillasT;
-                            casillasP = prueeba.casillasP;
-                        }
                     }
                     if (contador == 1)
                     {
-                        int indeex = Convert.ToInt32(trozos[0]);
-                        if (indeex == 0)
-                        {
-                            show_grid = "temperatura";
-                            TempPhaseBox.SelectedItem = "Temperature";
-                        }
-                        else if (indeex == 1)
-                        {
-                            show_grid = "fase";
-                            TempPhaseBox.SelectedItem = "Phase";
-                        }
-                        else { }
+                        numcharts = Convert.ToInt32(trozos[0]);
                     }
-                    if (contador == 2)
+                    if (iiii < numcharts && contador > 1)
+                    {
+                        PruebaChart prueba = new PruebaChart { timeChart = Convert.ToDouble(trozos[0]), casillasT = Convert.ToDouble(trozos[1]), casillasP = Convert.ToDouble(trozos[2]) };
+                        listChart.Add(prueba);
+                        iiii++;
+                    }
+                    if (contador == numcharts + 2)
                     {
                         int rej = Convert.ToInt32(trozos[0]);
 
                         pan = new StackPanel[rej, rej];
                         CreateDataGridyCristal(Rejilla, rej);
                     }
-                    if (contador == 1)
+                    if (contador == numcharts + 3)
                     {
                         steps = Convert.ToInt32(trozos[0]);
                         step_box.Content = Convert.ToString(steps);
                     }
-                    if (contador == 2)
+                    if (contador == numcharts + 4)
                     {
                         numparametros = Convert.ToInt32(trozos[0]);
                     }
 
-                    if (contador == 5)
+                    if (contador == numcharts + 5)
                     {
                         string name_1 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_1 = new Parametros(name_1, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_1);
                         SetTextParametros(par_1);
                     }
-                    if (contador == 3)
+
+                    if (contador == numcharts + 6)
                     {
                         string name_2 = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
                         Parametros par_2 = new Parametros(name_2, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
                         listaParametros.Add(par_2);
                         SetTextParametros(par_2);
-                    }  
-                    if (contador > 3)
+                    }
+
+                    if (ii < (numparametros - 2) && contador > (numcharts + 6))
+                    {
+                        string name = (trozos[0] + ' ' + Convert.ToString(trozos[1]));
+                        Parametros parametros = new Parametros(name, Convert.ToDouble(trozos[2]), Convert.ToDouble(trozos[3]), Convert.ToDouble(trozos[4]), Convert.ToDouble(trozos[5]));
+                        listaParametros.Add(parametros);
+                        SetTextParametros(parametros);
+                        ListBoxParametros.Items.Add(parametros.GetName());
+                        ii++;
+                    }
+
+                    if (contador > numcharts + 6 + numparametros - 2)
                     {
                         cris.GetCristal();
 
@@ -384,7 +380,7 @@ namespace Amplicacion
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetTemperature(Convert.ToDouble(trozos[2]));
                         cris.GetCelda(Convert.ToDouble(trozos[1]), Convert.ToDouble(trozos[0])).SetPhase(Convert.ToDouble(trozos[3]));
                     }
-                    contado++;
+                    contador++;
                     paintInitialT();
                 }
 
@@ -579,12 +575,34 @@ namespace Amplicacion
                     if (show_grid == "temperatura")
                     {
                         double temp = cris.GetCeldaij(irow, icol).GetTemperature();
+                        
                         if (temp < -1)
                         {
                             temp = -1;
                         }
-                        byte R = Convert.ToByte(Math.Round(-1 * temp * 255, 0)); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
-                        Color colorset = Color.FromArgb(255, 255, R, 0);
+                        byte A;
+                        if (filas > 14)
+                        {
+                            if (temp > -0.99)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-100 * temp - 99) * 255, 0));
+                        }
+                        else if (filas>7)
+                        {
+                            if (temp > -0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-20 * temp - 19) * 255, 0));
+                        }
+                        else 
+                        {
+                            if (temp > -0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((-10 * temp - 9) * 255, 0));
+                        }
+                        Color colorset = Color.FromArgb(A, 255, 255, 0);
                         Brush colorBrush = new SolidColorBrush(colorset);      // El color de cada casilla se define por un panel 
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
@@ -599,8 +617,23 @@ namespace Amplicacion
                         //{
                         //    phase = 1;
                         //}
-                        byte R = Convert.ToByte(Math.Round(phase * 255, 0));
-                        Color colorset = Color.FromArgb(255, 0, R, 255);
+                        byte A;
+                        if (filas > 14)
+                        {
+                            if (phase < 0.95)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((20 * phase -19) * 255, 0));
+                        }
+                        else 
+                        {
+                            if (phase < 0.9)
+                                A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                            else
+                                A = Convert.ToByte(Math.Round((10 * phase - 9) * 255, 0));
+                        }
+                        
+                        Color colorset = Color.FromArgb(A, 0, 255, 255);
                         Brush colorBrush = new SolidColorBrush(colorset);
                         StackPanel panel = new StackPanel();
                         panel.Background = colorBrush;
@@ -638,6 +671,7 @@ namespace Amplicacion
             TempIndicator.Children.Clear();
             int contar = TempIndicator.RowDefinitions.Count(); 
             int count = 0;
+            int filasG = Rejilla.RowDefinitions.Count();
             if (TempIndicator.RowDefinitions.Count() > 0)
             { }
             else
@@ -657,8 +691,29 @@ namespace Amplicacion
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();                 // La gama de colores se crea con una variedad progresiva de stack panels
-                    byte R = Convert.ToByte(Math.Round(255 + temp * 255, 0));
-                    Color colorset = Color.FromArgb(255, 255, R, 0);
+                    byte A;
+                    if (filasG > 14)
+                    {
+                        if (temp > -0.99)
+                            A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                        else
+                            A = Convert.ToByte(Math.Round((-100 * temp - 99) * 255, 0));
+                    }
+                    else if (filasG > 7)
+                    {
+                        if (temp > -0.95)
+                            A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                        else
+                            A = Convert.ToByte(Math.Round((-20 * temp - 19) * 255, 0));
+                    }
+                    else
+                    {
+                        if (temp > -0.9)
+                            A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                        else
+                            A = Convert.ToByte(Math.Round((-10 * temp - 9) * 255, 0));
+                    }
+                    Color colorset = Color.FromArgb(A, 255,255, 0);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
                     if (TempIndicator.Children != null)
@@ -674,14 +729,28 @@ namespace Amplicacion
             }
             else if (show_grid == "fase") // Analogamente a la te,peratura sucede con la fase
             {
-                double fase = 0;
+                double phase = 0;
                 foreach (RowDefinition row in TempIndicator.RowDefinitions)
                 {
                     contar = TempIndicator.RowDefinitions.Count();
                     Double filasD = Convert.ToDouble(filas);
                     StackPanel panel = new StackPanel();
-                    byte R = Convert.ToByte(Math.Round(255 - fase * 255, 0));
-                    Color colorset = Color.FromArgb(255, 0, R, 255);
+                    byte A;
+                    if (filasG > 14)
+                    {
+                        if (phase < 0.95)
+                            A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                        else
+                            A = Convert.ToByte(Math.Round((20 * phase - 19) * 255, 0));
+                    }
+                    else
+                    {
+                        if (phase < 0.9)
+                            A = Convert.ToByte(0); // El valor de la temperatura asoignara una tonalidad específica de color, lo que nos permitirá distinguir la evolucion de la temperatura y la fase
+                        else
+                            A = Convert.ToByte(Math.Round((10 * phase - 9) * 255, 0));
+                    }
+                    Color colorset = Color.FromArgb(A, 0, 255, 255);
                     panel.Background = new SolidColorBrush(colorset);
                     Grid.SetRow(panel, count);
                     if (TempIndicator.Children != null)
@@ -690,7 +759,7 @@ namespace Amplicacion
                     }
                     else { }
                     count++;
-                    fase = fase + 1 / filasD;
+                    phase = phase + 1 / filasD;
                 }
                 text0.Text = "1\nLiquid";
                 text1.Text = "0\nSolid";
@@ -713,15 +782,13 @@ namespace Amplicacion
             PruebaChart newPoint = new PruebaChart { timeChart = count, casillasT = T, casillasP = P };
             chartE.Data.Add(newPoint);
             listChart.Add(newPoint);
-<<<<<<< HEAD
-            textTa.Text = T.ToString();
-            textPa.Text = P.ToString();
+
+            textTa.Text = Math.Round(T,4).ToString();
+            textPa.Text = Math.Round(P,4).ToString();
             //seriesChartP.ItemsSource = chartE.Data;
             //seriesChartT.ItemsSource = chartE.Data;
-=======
-            seriesChartP.ItemsSource = chartE.Data;
-            seriesChartT.ItemsSource = chartE.Data;
->>>>>>> 8bbacd5cd0f49e8361374ff6a04c7e0c4bfd9269
+
+
         }
 
     }
